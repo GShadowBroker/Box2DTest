@@ -1,8 +1,11 @@
-package com.gledyson.game;
+package com.gledyson.game.physics;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
@@ -84,11 +87,8 @@ public class BodyFactory {
         return body;
     }
 
-    public Body makeCircle(
-            float posX, float posY, float radius,
-            Material material, BodyDef.BodyType bodyType
-    ) {
-        return makeCircle(posX, posY, radius, material, bodyType, false);
+    public Body makeCircle(float posX, float posY, float radius, Material material) {
+        return makeCircle(posX, posY, radius, material, BodyDef.BodyType.DynamicBody, false);
     }
 
     public Body makeRectangle(
@@ -114,5 +114,56 @@ public class BodyFactory {
         poly.dispose();
 
         return boxBody;
+    }
+
+    public Body makePoly(
+            float posX, float posY, Vector2[] vertices,
+            Material material, BodyDef.BodyType bodyType
+    ) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(posX, posY);
+        bodyDef.type = bodyType;
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape poly = new PolygonShape();
+        poly.set(vertices);
+
+        body.createFixture(makeFixture(material, poly));
+        poly.dispose();
+
+        return body;
+    }
+
+    public Body makeConeSensor(Body body, float radius) {
+        FixtureDef fixture = new FixtureDef();
+        fixture.isSensor = true;
+
+        PolygonShape shape = new PolygonShape();
+
+        Vector2[] vertices = new Vector2[5];
+
+        vertices[0] = new Vector2(0f, 0f);
+        for (int i = 2; i < 6; i++) {
+            float angle = (float) (i / 6.0f * 145 * MathUtils.degreesToRadians);
+            vertices[i - 1] = new Vector2(
+                    radius * (float) MathUtils.cos(angle),
+                    radius * (float) MathUtils.sin(angle)
+            );
+        }
+
+        shape.set(vertices);
+        fixture.shape = shape;
+        body.createFixture(fixture);
+
+        shape.dispose();
+
+        return body;
+    }
+
+    public void makeAllFixturesSensors(Body body) {
+        for (Fixture fixture : body.getFixtureList()) {
+            fixture.setSensor(true);
+        }
     }
 }

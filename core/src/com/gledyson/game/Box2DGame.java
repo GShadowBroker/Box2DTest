@@ -2,6 +2,7 @@ package com.gledyson.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.gledyson.game.loaders.Box2DAssetManager;
 import com.gledyson.game.screens.EndScreen;
 import com.gledyson.game.screens.LoadingScreen;
 import com.gledyson.game.screens.MainScreen;
@@ -10,6 +11,7 @@ import com.gledyson.game.screens.PreferencesScreen;
 
 public class Box2DGame extends Game {
     public SpriteBatch batch;
+    public Box2DAssetManager assetManager;
     public boolean debugMode = false;
     private AppPreferences preferences;
 
@@ -26,7 +28,9 @@ public class Box2DGame extends Game {
     @Override
     public void create() {
         batch = new SpriteBatch();
+        assetManager = new Box2DAssetManager();
         preferences = new AppPreferences();
+
         changeScreen(Screen.LOADING);
     }
 
