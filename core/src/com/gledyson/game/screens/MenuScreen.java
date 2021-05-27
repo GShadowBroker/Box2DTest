@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.gledyson.game.Box2DGame;
+import com.gledyson.game.loaders.Box2DAssetManager;
 
 public class MenuScreen implements Screen {
     private static final String TAG = MenuScreen.class.getSimpleName();
@@ -44,7 +45,8 @@ public class MenuScreen implements Screen {
         stage.addActor(table);
 
         // Skins and menu buttons
-        Skin skin = new Skin(Gdx.files.internal("skin/quantum-horizon-ui.json"));
+        Skin skin = game.assetManager.manager.get(Box2DAssetManager.SKIN_JSON);
+
         TextButton newGameBtn = new TextButton("new game", skin);
         TextButton preferencesBtn = new TextButton("preferences", skin);
         TextButton exitBtn = new TextButton("exit", skin);

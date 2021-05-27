@@ -1,6 +1,7 @@
 package com.gledyson.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gledyson.game.loaders.Box2DAssetManager;
 import com.gledyson.game.screens.EndScreen;
@@ -25,13 +26,23 @@ public class Box2DGame extends Game {
     private PreferencesScreen preferencesScreen;
     private EndScreen endScreen;
 
+    public Music playingSong;
+
     @Override
     public void create() {
         batch = new SpriteBatch();
         assetManager = new Box2DAssetManager();
-        preferences = new AppPreferences();
+        preferences = new AppPreferences(this);
 
         changeScreen(Screen.LOADING);
+
+        assetManager.queueAddMusic();
+        assetManager.manager.finishLoading();
+        playingSong = assetManager.manager.get(Box2DAssetManager.BIO_UNIT_MUSIC);
+
+        playingSong.setLooping(true);
+        playingSong.setVolume(preferences.getMusicVolume());
+        playingSong.play();
     }
 
     @Override
@@ -83,6 +94,8 @@ public class Box2DGame extends Game {
     @Override
     public void dispose() {
         batch.dispose();
+        playingSong.dispose();
+        assetManager.manager.dispose();
         super.dispose();
     }
 }

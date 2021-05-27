@@ -27,6 +27,7 @@ public class Box2DModel implements Disposable {
 
     public final Player player;
 
+    public float soundVolume;
     private final Sound pingSound;
     private final Sound boingSound;
 
@@ -59,11 +60,10 @@ public class Box2DModel implements Disposable {
         world.setContactListener(new Box2DContactListener(this));
 
         // Add sounds
-        game.assetManager.queueAddSounds();
-        game.assetManager.manager.finishLoading();
-
         pingSound = game.assetManager.manager.get(Box2DAssetManager.PING_SOUND);
         boingSound = game.assetManager.manager.get(Box2DAssetManager.BOING_SOUND);
+
+        soundVolume = game.getPreferences().getSoundVolume();
 
         // add objects (DEBUG ONLY)
         Body ground = createFloor();
@@ -105,8 +105,6 @@ public class Box2DModel implements Disposable {
         // Mouse
         if (controller.mouse1 && isMouseOnBody(player.body, controller.mousePos)) {
             Gdx.app.log(TAG, "mouse on player");
-
-            playSound(SoundEffect.BOING);
         }
     }
 
@@ -132,10 +130,10 @@ public class Box2DModel implements Disposable {
     public void playSound(SoundEffect sound) {
         switch (sound) {
             case PING:
-                pingSound.play(game.getPreferences().getSoundVolume());
+                pingSound.play(soundVolume);
                 break;
             case BOING:
-                boingSound.play(game.getPreferences().getSoundVolume());
+                boingSound.play(soundVolume);
                 break;
             default:
                 // do nothing
@@ -191,5 +189,7 @@ public class Box2DModel implements Disposable {
         world.dispose();
         debugRenderer.dispose();
         player.dispose();
+        pingSound.dispose();
+        boingSound.dispose();
     }
 }

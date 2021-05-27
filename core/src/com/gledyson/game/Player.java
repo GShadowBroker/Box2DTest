@@ -1,7 +1,7 @@
 package com.gledyson.game;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -24,7 +24,7 @@ public class Player implements Disposable {
 
     // Time
     private float stateTime;
-    private static final float FRAME_DURATION = 0.125f;
+    private static final float FRAME_DURATION = 0.07f;
 
     public Player(Vector2 position, World world, Box2DGame game) {
         this.position = position;
@@ -47,32 +47,39 @@ public class Player implements Disposable {
 
     private void buildAnimation() {
         // Asset manager
-        game.assetManager.queueAddImages();
-        game.assetManager.manager.finishLoading();
 
-        Texture playerSpriteSheet = game.assetManager.manager.get(Box2DAssetManager.PLAYER_IMG);
+        TextureAtlas atlas = game.assetManager.manager.get(Box2DAssetManager.GAME_ATLAS);
+        TextureRegion player1 = atlas.findRegion("player-1");
+        TextureRegion player2 = atlas.findRegion("player-2");
+        TextureRegion player3 = atlas.findRegion("player-3");
+        TextureRegion player4 = atlas.findRegion("player-4");
 
-        TextureRegion[][] temp = TextureRegion.split(playerSpriteSheet,
-                playerSpriteSheet.getWidth() / FRAME_COLS,
-                playerSpriteSheet.getHeight() / FRAME_ROWS);
-
-        TextureRegion[] playerAnimation = new TextureRegion[12 + (FRAME_COLS * FRAME_ROWS)];
-
-        int index = 0;
-        for (TextureRegion[] textureRegions : temp) {
-            for (TextureRegion textureRegion : textureRegions) {
-                playerAnimation[index] = textureRegion;
-                index++;
-            }
-        }
-
-        // Add still frames after wink frames
-        for (int i = FRAME_COLS * FRAME_ROWS; i < 12 + (FRAME_COLS * FRAME_ROWS); i++) {
-            playerAnimation[i] = temp[0][0];
-        }
+        TextureRegion[] playerAnimation = new TextureRegion[]{
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player2, player3, player4, player2,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player2, player3, player4, player2,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player1, player1, player1, player1,
+                player2, player3, player4, player2,
+                player2, player3, player4, player2
+        };
 
         animation = new Animation<>(FRAME_DURATION, playerAnimation);
-
         this.stateTime = 0f;
     }
 

@@ -11,6 +11,12 @@ public class AppPreferences {
     private static final String PREF_MUSIC_ENABLED = "music.enabled";
     private static final String PREF_SOUND_ENABLED = "sound.enabled";
 
+    private final Box2DGame game;
+
+    public AppPreferences(Box2DGame game) {
+        this.game = game;
+    }
+
     protected Preferences getPrefs() {
         return Gdx.app.getPreferences(PREFS_NAME);
     }
@@ -20,6 +26,7 @@ public class AppPreferences {
     }
 
     public void setMusicVolume(float volume) {
+        game.playingSong.setVolume(volume);
         getPrefs().putFloat(PREF_MUSIC_VOLUME, volume);
         getPrefs().flush();
     }
@@ -38,6 +45,11 @@ public class AppPreferences {
     }
 
     public void setMusicEnabled(boolean musicEnabled) {
+        if (musicEnabled) {
+            game.playingSong.setVolume(getMusicVolume());
+        } else {
+            game.playingSong.setVolume(0f);
+        }
         getPrefs().putBoolean(PREF_MUSIC_ENABLED, musicEnabled);
         getPrefs().flush();
     }
