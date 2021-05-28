@@ -2,12 +2,15 @@ package com.gledyson.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.gledyson.game.Box2DGame;
@@ -37,12 +40,14 @@ public class MenuScreen implements Screen {
     }
 
     private void init() {
+
+        TextureAtlas atlas = game.assetManager.manager.get(Box2DAssetManager.GAME_ATLAS);
+        TextureRegion menuBackground = atlas.findRegion("brazil-bg");
+
         // Table
         Table table = new Table();
         table.setFillParent(true);
         table.setDebug(game.debugMode);
-
-        stage.addActor(table);
 
         // Skins and menu buttons
         Skin skin = game.assetManager.manager.get(Box2DAssetManager.SKIN_JSON);
@@ -81,6 +86,12 @@ public class MenuScreen implements Screen {
         table.row();
 
         table.add(exitBtn).fillX().uniform();
+
+        // Background
+        table.setBackground(new TiledDrawable(menuBackground));
+
+        // Add table
+        stage.addActor(table);
     }
 
     @Override

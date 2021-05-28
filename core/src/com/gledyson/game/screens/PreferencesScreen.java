@@ -2,6 +2,8 @@ package com.gledyson.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.gledyson.game.Box2DGame;
@@ -50,6 +53,9 @@ public class PreferencesScreen implements Screen {
     }
 
     private void init() {
+        TextureAtlas atlas = game.assetManager.manager.get(Box2DAssetManager.GAME_ATLAS);
+        TextureRegion menuBackground = atlas.findRegion("brazil-bg");
+
         // Grid
         Table table = new Table();
         table.setFillParent(true);
@@ -59,8 +65,6 @@ public class PreferencesScreen implements Screen {
         stage.addActor(table);
 
         // Declare actors
-//        game.assetManager.queueAddSkin();
-//        game.assetManager.manager.finishLoading();
         Skin skin = game.assetManager.manager.get(Box2DAssetManager.SKIN_JSON);
 
         final Slider musicVolumeSlider = new Slider(0f, 1f, 0.1f, false, skin);
@@ -145,6 +149,8 @@ public class PreferencesScreen implements Screen {
         // 5th row
         table.row().pad(32f, 0f, 10f, 0f);
         table.add(backButton).left();
+
+        table.setBackground(new TiledDrawable(menuBackground));
     }
 
     @Override

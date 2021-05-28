@@ -39,11 +39,6 @@ public class Box2DAssetManager {
         manager.load(LOADING_ATLAS, TextureAtlas.class);
     }
 
-//    public void queueAddSkin() {
-//        SkinLoader.SkinParameter skinParams = new SkinLoader.SkinParameter(SKIN_ATLAS);
-//        manager.load(SKIN_JSON, Skin.class, skinParams);
-//    }
-
     public void queueAddSounds() {
         manager.load(BOING_SOUND, Sound.class);
         manager.load(PING_SOUND, Sound.class);

@@ -6,18 +6,32 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.gledyson.game.Box2DGame;
+import com.gledyson.game.LoadingBarPart;
 import com.gledyson.game.loaders.Box2DAssetManager;
 
 public class LoadingScreen implements Screen {
     private static final String TAG = LoadingScreen.class.getSimpleName();
 
     private final Box2DGame game;
+    private final Stage stage;
+
+    // Layout
+    private Table table;
+    private Table loadingTable;
 
     // Textures
     private TextureAtlas atlas;
     private TextureRegion title;
     private TextureRegion dash;
+    private TextureRegion copyright;
+    private TextureRegion background;
 
     private Animation<TextureRegion> dashAnimation;
     private final float DASH_ANIMATION_DURATION = 0.07f;
@@ -26,8 +40,7 @@ public class LoadingScreen implements Screen {
     private int currentLoadingStage = 0;
 
     // State timers
-    private float countdown = 5f;
-    private float animationStateTime;
+    private float countdown = 5f; // 5s min on loading screen - debug only
 
     // loading stages
     private final int IMAGE = 0; // loading images
@@ -38,10 +51,14 @@ public class LoadingScreen implements Screen {
 
     public LoadingScreen(Box2DGame game) {
         this.game = game;
+        this.stage = new Stage(new ScreenViewport());
+
+        loadAssets();
+        game.assetManager.queueAddGameImages();
+        Gdx.app.log(TAG, "Loading images...");
     }
 
-    @Override
-    public void show() {
+    public void loadAssets() {
         game.assetManager.queueAddLoadingImages();
         game.assetManager.manager.finishLoading();
 
@@ -52,6 +69,8 @@ public class LoadingScreen implements Screen {
 
         title = atlas.findRegion("staying-alight-logo");
         dash = atlas.findRegion("loading-dash");
+        copyright = atlas.findRegion("copyright");
+        background = atlas.findRegion("flamebackground");
 
         // Init animation bar
         dashAnimation = new Animation<TextureRegion>(
@@ -59,37 +78,64 @@ public class LoadingScreen implements Screen {
                 atlas.findRegion("flames/flames")
         );
         dashAnimation.setPlayMode(Animation.PlayMode.LOOP);
+    }
 
-        // queue game images but don't load them yet
-        game.assetManager.queueAddGameImages();
-        Gdx.app.log(TAG, "Loading images...");
+    @Override
+    public void show() {
+        // layout table
+        table = new Table();
+        table.setFillParent(true);
+        table.setDebug(game.debugMode);
+
+        // loading bar
+        loadingTable = new Table();
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+        loadingTable.add(new LoadingBarPart(dash, dashAnimation));
+
+        // add items to layout table
+        table.add(new Image(title)).align(Align.center).pad(10, 0, 0, 0).colspan(10);
+        table.row();
+        table.add(loadingTable).width(400f); // hardcoded value == bad. Fix later!
+        table.row();
+        table.add(new Image(copyright)).align(Align.center).padTop(200f).colspan(10);
+        table.setBackground(new TiledDrawable(background));
+
+        stage.addActor(table);
     }
 
     @Override
     public void render(float delta) {
-//        ScreenUtils.clear(0, 0, 0, 1);
         Gdx.gl.glClearColor(0, 0, 0, 1); //  clear the screen
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        animationStateTime += delta;
-
         game.batch.begin();
-        game.batch.draw(title, 135, 250);
-        drawLoadingBar(currentLoadingStage * 2,
-                dashAnimation.getKeyFrame(animationStateTime, true));
-        game.batch.end();
 
         updateManager(delta);
+        stage.act(delta);
+        stage.draw();
+
+        game.batch.end();
     }
 
     private void updateManager(float delta) {
 
-        loadingProgress = game.assetManager.manager.getProgress();
-        Gdx.app.log(TAG, (int) (loadingProgress * 100) + "%");
-
         if (game.assetManager.manager.update()) {
+
             currentLoadingStage += 1;
+
+            if (currentLoadingStage <= 5) {
+                loadingTable.getCells().get((currentLoadingStage - 1) * 2).getActor().setVisible(true);
+                loadingTable.getCells().get((currentLoadingStage - 1) * 2 + 1).getActor().setVisible(true);
+            }
 
             switch (currentLoadingStage) {
                 case FONT:
@@ -122,6 +168,7 @@ public class LoadingScreen implements Screen {
                 currentLoadingStage = 5;
                 if (countdown < 0) {
                     game.changeScreen(Box2DGame.Screen.MENU);
+                    dispose();
                 }
             }
         }
@@ -136,7 +183,7 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -157,5 +204,6 @@ public class LoadingScreen implements Screen {
     @Override
     public void dispose() {
         atlas.dispose();
+        stage.dispose();
     }
 }

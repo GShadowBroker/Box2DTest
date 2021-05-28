@@ -1,12 +1,19 @@
 
 game.png
-size: 512, 512
+size: 1024, 1024
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
+brazil-bg
+  rotate: false
+  xy: 2, 262
+  size: 720, 720
+  orig: 720, 720
+  offset: 0, 0
+  index: -1
 enemy-1
   rotate: false
-  xy: 132, 262
+  xy: 2, 2
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
@@ -20,28 +27,28 @@ enemy-2
   index: -1
 enemy-3
   rotate: false
-  xy: 132, 132
+  xy: 724, 724
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-4
   rotate: false
-  xy: 2, 262
+  xy: 2, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-1
   rotate: false
-  xy: 262, 262
+  xy: 854, 854
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-2
   rotate: false
-  xy: 2, 132
+  xy: 724, 854
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
@@ -55,7 +62,7 @@ player-3
   index: -1
 player-4
   rotate: false
-  xy: 2, 2
+  xy: 132, 132
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
