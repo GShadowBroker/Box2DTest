@@ -57,7 +57,7 @@ public class Box2DModel implements Disposable {
         this.player = new Player(new Vector2(1f, 1f), world, game);
 
         // add contact listener
-        world.setContactListener(new Box2DContactListener(this));
+//        world.setContactListener(new Box2DContactListener(this));
 
         // Add sounds
         pingSound = game.assetManager.manager.get(Box2DAssetManager.PING_SOUND);
