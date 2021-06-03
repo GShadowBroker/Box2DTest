@@ -1,59 +1,59 @@
 package com.gledyson.game.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.SortedIteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.gledyson.game.Box2DGame;
 import com.gledyson.game.components.TextureComponent;
 import com.gledyson.game.components.TransformComponent;
 
 import java.util.Comparator;
 
 public class RenderingSystem extends SortedIteratingSystem {
+    private static final String TAG = RenderingSystem.class.getSimpleName();
 
     private final SpriteBatch batch;
     private final Array<Entity> renderQueue;
     private final OrthographicCamera camera;
 
+    private final OrthogonalTiledMapRenderer mapRenderer;
     public static final float PPM = 32.0f; // PPM = pixels per meter
     public static final float PIXELS_TO_METERS = 1.0f / PPM;
 
     public static final float FRUSTUM_WIDTH = Gdx.graphics.getWidth() / PPM;
     public static final float FRUSTUM_HEIGHT = Gdx.graphics.getHeight() / PPM;
 
+    private final int[] foregrounds = {2, 3};
+    private final int[] backgrounds = {0, 1};
+
     // static method to get screen width in meters
     private static final Vector2 meterDimensions = new Vector2();
     private static final Vector2 pixelDimensions = new Vector2();
 
-    // component mappers to get components from entities
-    private final ComponentMapper<TextureComponent> textureCMapper;
-    private final ComponentMapper<TransformComponent> transformCMapper;
-
     // compares vectors based on their z-axis value
     private final Comparator<Entity> comparator = new ZComparator();
 
-    public RenderingSystem(SpriteBatch batch) {
+    public RenderingSystem(Box2DGame game, OrthogonalTiledMapRenderer mapRenderer) {
 
         super(Family.all(TransformComponent.class, TextureComponent.class).get(), new ZComparator());
 
-        this.batch = batch;
+        this.batch = game.batch;
         this.camera = new OrthographicCamera(FRUSTUM_WIDTH, FRUSTUM_HEIGHT);
         camera.position.set(FRUSTUM_WIDTH / 2f, FRUSTUM_HEIGHT / 2f, 0f); // center
+        this.mapRenderer = mapRenderer;
 
         this.renderQueue = new Array<>();
-
-        textureCMapper = ComponentMapper.getFor(TextureComponent.class);
-        transformCMapper = ComponentMapper.getFor(TransformComponent.class);
     }
 
     @Override
     public void update(float deltaTime) {
-
         super.update(deltaTime);
 
         // sort based on z
@@ -61,8 +61,15 @@ public class RenderingSystem extends SortedIteratingSystem {
 
         // update camera and sprite batch
         camera.update();
+        mapRenderer.setView(camera);
         batch.setProjectionMatrix(camera.combined);
+
+        // blending
         batch.enableBlending();
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        // render map
+        mapRenderer.render();
 
         batch.begin();
         drawEntities();
@@ -75,16 +82,16 @@ public class RenderingSystem extends SortedIteratingSystem {
 
         for (Entity entity : renderQueue) {
 
-            TextureComponent textureC = textureCMapper.get(entity);
-            TransformComponent transformC = transformCMapper.get(entity);
+            TextureComponent textureC = Mappers.texture.get(entity);
+            TransformComponent transformC = Mappers.transform.get(entity);
 
             // don't render if no texture or is hidden
             if (textureC.region == null || transformC.isHidden) continue;
 
-//            float width = textureC.region.getRegionWidth();
-//            float height = textureC.region.getRegionHeight();
-            float width = 1f * PPM;
-            float height = 1f * PPM;
+            float width = textureC.region.getRegionWidth() / 4f;
+            float height = textureC.region.getRegionHeight() / 4f;
+//            float width = 1f * PPM;
+//            float height = 1f * PPM;
 
             // batch.draw(textureRegion, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
             batch.draw(
@@ -130,14 +137,11 @@ public class RenderingSystem extends SortedIteratingSystem {
 
     public static class ZComparator implements Comparator<Entity> {
 
-        private final ComponentMapper<TransformComponent> transCMapper =
-                ComponentMapper.getFor(TransformComponent.class);
-
         @Override
         public int compare(Entity entityA, Entity entityB) {
 
-            float az = transCMapper.get(entityA).position.z;
-            float bz = transCMapper.get(entityB).position.z;
+            float az = Mappers.transform.get(entityA).position.z;
+            float bz = Mappers.transform.get(entityB).position.z;
 
             if (az > bz) return 1;
             else if (az < bz) return -1;

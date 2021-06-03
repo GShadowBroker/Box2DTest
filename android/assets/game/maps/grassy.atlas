@@ -1,0 +1,41 @@
+
+grassy.png
+size: 512, 128
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+arbusto
+  rotate: false
+  xy: 256, 32
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+ceu-1.png
+  rotate: false
+  xy: 256, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+cloud-1-1.png
+  rotate: false
+  xy: 128, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+cloud-2-1.png
+  rotate: false
+  xy: 0, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+grassy-ground
+  rotate: false
+  xy: 256, 64
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1

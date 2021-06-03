@@ -1,6 +1,5 @@
 package com.gledyson.game.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -12,29 +11,36 @@ import com.gledyson.game.components.PlayerComponent;
 import com.gledyson.game.components.StateComponent;
 
 public class PlayerControlSystem extends IteratingSystem {
+    private static final String TAG = PlayerControlSystem.class.getSimpleName();
 
     private final KeyboardController controller;
 
-    private final ComponentMapper<PlayerComponent> playerCM;
-    private final ComponentMapper<Box2DBodyComponent> bodyCM;
-    private final ComponentMapper<StateComponent> stateCM;
-
     public PlayerControlSystem(KeyboardController controller) {
         super(Family.all(PlayerComponent.class, Box2DBodyComponent.class, StateComponent.class).get());
-
         this.controller = controller;
-        this.playerCM = ComponentMapper.getFor(PlayerComponent.class);
-        this.bodyCM = ComponentMapper.getFor(Box2DBodyComponent.class);
-        this.stateCM = ComponentMapper.getFor(StateComponent.class);
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        Box2DBodyComponent bodyC = bodyCM.get(entity);
-        StateComponent stateC = stateCM.get(entity);
+        PlayerComponent playerC = Mappers.player.get(entity);
+        Box2DBodyComponent bodyC = Mappers.body.get(entity);
+        StateComponent stateC = Mappers.state.get(entity);
+
+        // check if on spring
+        if (playerC.onSpring) {
+            bodyC.body.applyLinearImpulse(
+                    0, 15f,
+                    bodyC.body.getWorldCenter().x, bodyC.body.getWorldCenter().y,
+                    true
+            );
+            stateC.set(StateComponent.State.JUMPING);
+            playerC.onSpring = false;
+        }
 
         // changes state according to current linear velocity (FALLING, MOVING etc)
         updateState(bodyC.body.getLinearVelocity(), stateC);
+
+//        Gdx.app.log(TAG, "State: " + stateC.get());
 
         if (controller.left) {
             bodyC.body.setLinearVelocity(
@@ -52,39 +58,32 @@ public class PlayerControlSystem extends IteratingSystem {
             );
         }
 
-        if (!controller.left && !controller.right) {
-            bodyC.body.setLinearVelocity(
-                    // lerp(from, to, progress);
-                    MathUtils.lerp(bodyC.body.getLinearVelocity().x, 0f, 0.1f),
-                    bodyC.body.getLinearVelocity().y
-            );
-        }
-
         if (controller.up &&
                 (stateC.get() == StateComponent.State.IDLE || stateC.get() == StateComponent.State.MOVING)) {
 
-            if (bodyC.body.getLinearVelocity().y != 0) return;
+//            if (bodyC.body.getLinearVelocity().y != 0) return;
 
             bodyC.body.applyLinearImpulse(
                     0, 10f,
                     bodyC.body.getWorldCenter().x, bodyC.body.getWorldCenter().y,
                     true
             );
-            stateC.set(StateComponent.State.JUMPING);
         }
     }
 
     private void updateState(Vector2 linearVelocity, StateComponent stateComponent) {
-        // if y > 0 ????? should be jumping instead? and negative y might be falling. Idk, check out later...
-        if (linearVelocity.y > 0) {
+
+        if (linearVelocity.y > 0.1f) {
+            stateComponent.set(StateComponent.State.JUMPING);
+
+        } else if (linearVelocity.y < -0.1f) {
             stateComponent.set(StateComponent.State.FALLING);
 
-        } else if (linearVelocity.y == 0) {
+        } else {
 
-            if (stateComponent.get() == StateComponent.State.FALLING) {
+            if (linearVelocity.x == 0) {
                 stateComponent.set(StateComponent.State.IDLE);
-            }
-            if (linearVelocity.x != 0) {
+            } else {
                 stateComponent.set(StateComponent.State.MOVING);
             }
         }

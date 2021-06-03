@@ -16,7 +16,7 @@ public class StateComponent implements Component {
     }
 
     public void set(State newState) {
-        this.state = state;
+        this.state = newState;
         this.time = 0f;
     }
 }

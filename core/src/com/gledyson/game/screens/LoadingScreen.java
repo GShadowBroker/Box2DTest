@@ -40,7 +40,7 @@ public class LoadingScreen implements Screen {
     private int currentLoadingStage = 0;
 
     // State timers
-    private float countdown = 5f; // 5s min on loading screen - debug only
+//    private float countdown = 5f; // 5s min on loading screen - debug only
 
     // loading stages
     private final int IMAGE = 0; // loading images
@@ -164,12 +164,9 @@ public class LoadingScreen implements Screen {
 
             // ensure min 5 seconds on loading screen
             if (currentLoadingStage > 5) {
-                countdown -= delta;
                 currentLoadingStage = 5;
-                if (countdown < 0) {
-                    game.changeScreen(Box2DGame.Screen.MENU);
-                    dispose();
-                }
+                game.changeScreen(Box2DGame.Screen.MENU);
+                dispose();
             }
         }
     }

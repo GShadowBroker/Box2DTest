@@ -47,8 +47,8 @@ public class BodyFactory {
                 break;
             case RUBBER:
                 fixture.density = 1f;
-                fixture.friction = 0.3f;
-                fixture.restitution = 0.9f;
+                fixture.friction = 0f; // 0.3f
+                fixture.restitution = 0.9f; // 1f
                 break;
             case STONE:
                 fixture.density = 1f;
@@ -145,10 +145,10 @@ public class BodyFactory {
 
         vertices[0] = new Vector2(0f, 0f);
         for (int i = 2; i < 6; i++) {
-            float angle = (float) (i / 6.0f * 145 * MathUtils.degreesToRadians);
+            float angle = i / 6.0f * 145 * MathUtils.degreesToRadians;
             vertices[i - 1] = new Vector2(
-                    radius * (float) MathUtils.cos(angle),
-                    radius * (float) MathUtils.sin(angle)
+                    radius * MathUtils.cos(angle),
+                    radius * MathUtils.sin(angle)
             );
         }
 

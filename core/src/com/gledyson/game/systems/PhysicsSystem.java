@@ -1,6 +1,5 @@
 package com.gledyson.game.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -18,14 +17,8 @@ public class PhysicsSystem extends IteratingSystem {
     private final World world;
     private final Array<Entity> bodiesQueue;
 
-    private final ComponentMapper<Box2DBodyComponent> bodyCM;
-    private final ComponentMapper<TransformComponent> transformCM;
-
     public PhysicsSystem(World world) {
         super(Family.all(Box2DBodyComponent.class, TransformComponent.class).get());
-
-        bodyCM = ComponentMapper.getFor(Box2DBodyComponent.class);
-        transformCM = ComponentMapper.getFor(TransformComponent.class);
 
         this.world = world;
         bodiesQueue = new Array<>();
@@ -41,8 +34,8 @@ public class PhysicsSystem extends IteratingSystem {
             accumulator -= MAX_STEP_TIME;
 
             for (Entity entity : bodiesQueue) {
-                TransformComponent transformC = transformCM.get(entity);
-                Box2DBodyComponent bodyC = bodyCM.get(entity);
+                TransformComponent transformC = Mappers.transform.get(entity);
+                Box2DBodyComponent bodyC = Mappers.body.get(entity);
 
                 transformC.position.x = bodyC.body.getPosition().x;
                 transformC.position.y = bodyC.body.getPosition().y;

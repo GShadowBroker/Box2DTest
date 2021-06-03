@@ -2,16 +2,18 @@ package com.gledyson.game.loaders;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class Box2DAssetManager {
     public final AssetManager manager = new AssetManager();
 
     // Atlas
-    public static final String GAME_IMG = "game/images/game.png";
     public static final String GAME_ATLAS = "game/images/game.atlas";
     public static final String LOADING_ATLAS = "loading/loading.atlas";
 
@@ -26,6 +28,9 @@ public class Box2DAssetManager {
     // Music
     public static final String BIO_UNIT_MUSIC = "game/music/Bio Unit - Zone.mp3";
 
+    // Maps
+    public static final String LEVEL_1_MAP = "game/maps/grassy-ground.tmx";
+
     public void queueAddGameImages() {
         // atlas
         manager.load(GAME_ATLAS, TextureAtlas.class);
@@ -33,6 +38,10 @@ public class Box2DAssetManager {
         // skin
         SkinLoader.SkinParameter skinParams = new SkinLoader.SkinParameter(SKIN_ATLAS);
         manager.load(SKIN_JSON, Skin.class, skinParams);
+
+        // maps
+        manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        manager.load(LEVEL_1_MAP, TiledMap.class);
     }
 
     public void queueAddLoadingImages() {
