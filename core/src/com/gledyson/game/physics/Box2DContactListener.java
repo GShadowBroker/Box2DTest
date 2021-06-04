@@ -1,12 +1,14 @@
 package com.gledyson.game.physics;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.gledyson.game.components.CollisionComponent;
+import com.gledyson.game.systems.Mappers;
 
 public class Box2DContactListener implements ContactListener {
     private static final String TAG = Box2DContactListener.class.getSimpleName();
@@ -30,6 +32,8 @@ public class Box2DContactListener implements ContactListener {
 
         Entity collidedEntity = (Entity) fixture.getBody().getUserData();
 
+        Gdx.app.log(TAG, "Object " + Mappers.type.get(entity).type + " collided with " + Mappers.type.get(collidedEntity).type);
+
         CollisionComponent collisorEntityComponent = entity.getComponent(CollisionComponent.class);
         CollisionComponent collidedEntityComponent = collidedEntity.getComponent(CollisionComponent.class);
 
@@ -51,6 +55,6 @@ public class Box2DContactListener implements ContactListener {
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
-        
+
     }
 }

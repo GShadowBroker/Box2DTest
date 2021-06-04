@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.gledyson.game.Box2DGame;
 import com.gledyson.game.KeyboardController;
 import com.gledyson.game.LevelFactory;
+import com.gledyson.game.audio.SoundEffect;
 import com.gledyson.game.loaders.Box2DAssetManager;
 import com.gledyson.game.systems.AnimationSystem;
 import com.gledyson.game.systems.CameraSystem;
@@ -21,6 +21,7 @@ import com.gledyson.game.systems.EnemySystem;
 import com.gledyson.game.systems.PhysicsDebugSystem;
 import com.gledyson.game.systems.PhysicsSystem;
 import com.gledyson.game.systems.PlayerControlSystem;
+import com.gledyson.game.systems.ProjectileSystem;
 import com.gledyson.game.systems.RenderingSystem;
 import com.gledyson.game.utils.FrameRate;
 
@@ -36,23 +37,15 @@ public class MainScreen implements Screen {
     private final TiledMap map;
     private final OrthogonalTiledMapRenderer mapRenderer;
 
-    public enum SoundEffect {
-        PING, BOING
-    }
-
-    private final float soundVolume;
-    private final Sound pingSound;
-    private final Sound boingSound;
+    private final SoundEffect sound;
 
     public MainScreen(Box2DGame game) {
         this.game = game;
         controller = new KeyboardController();
         frameRate = new FrameRate();
+        sound = new SoundEffect(game);
 
         atlas = game.assetManager.manager.get(Box2DAssetManager.GAME_ATLAS);
-        pingSound = game.assetManager.manager.get(Box2DAssetManager.PING_SOUND);
-        boingSound = game.assetManager.manager.get(Box2DAssetManager.BOING_SOUND);
-        soundVolume = game.getPreferences().getSoundVolume();
 
         // Map
         map = game.assetManager.manager.get(Box2DAssetManager.LEVEL_1_MAP);
@@ -73,10 +66,8 @@ public class MainScreen implements Screen {
 
         engine.addSystem(new AnimationSystem());
 //        engine.addSystem(new LevelGenerationSystem(lvlFactory));
-        engine.addSystem(new PlayerControlSystem(controller));
-        engine.addSystem(new CollisionSystem(game));
-        engine.addSystem(new PhysicsSystem(lvlFactory.world));
-        engine.addSystem(new PhysicsDebugSystem(lvlFactory.world, camera));
+        engine.addSystem(new PlayerControlSystem(sound, controller, lvlFactory));
+        engine.addSystem(new CollisionSystem(game, sound));
 
         // create game objects
         Entity player = lvlFactory.createPlayer(atlas.findRegion("player-1"), camera);
@@ -96,7 +87,10 @@ public class MainScreen implements Screen {
         // Add last systems. Render last.
 //        engine.addSystem(new LiquidFloorSystem(player));
         engine.addSystem(new EnemySystem());
+        engine.addSystem(new ProjectileSystem());
         engine.addSystem(new CameraSystem(map));
+        engine.addSystem(new PhysicsSystem(lvlFactory.world, engine, map));
+        engine.addSystem(new PhysicsDebugSystem(lvlFactory.world, camera));
         engine.addSystem(renderingSystem);
     }
 
@@ -114,19 +108,6 @@ public class MainScreen implements Screen {
         if (game.debugMode) {
             frameRate.update();
             frameRate.render();
-        }
-    }
-
-    public void playSound(MainScreen.SoundEffect sound) {
-        switch (sound) {
-            case PING:
-                pingSound.play(soundVolume);
-                break;
-            case BOING:
-                boingSound.play(soundVolume);
-                break;
-            default:
-                // do nothing
         }
     }
 

@@ -25,9 +25,9 @@ public class LevelGenerationSystem extends IteratingSystem {
 
 //        Gdx.app.log(TAG, "currentPos: " + currentPosition + ", currentLevel: " + lvlFactory.currentLevel);
 
-        if ((currentPosition + 7) > lvlFactory.currentLevel) {
-//            Gdx.app.log(TAG, "currentPos: " + (currentPosition + 7) + ", currentLevel: " + lvlFactory.currentLevel);
-            lvlFactory.generateLevel(currentPosition + 7);
-        }
+//        if ((currentPosition + 7) > lvlFactory.currentLevel) {
+////            Gdx.app.log(TAG, "currentPos: " + (currentPosition + 7) + ", currentLevel: " + lvlFactory.currentLevel);
+//            lvlFactory.generateLevel(currentPosition + 7);
+//        }
     }
 }

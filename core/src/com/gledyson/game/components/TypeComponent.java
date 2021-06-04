@@ -1,11 +1,17 @@
 package com.gledyson.game.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.utils.Pool;
 
-public class TypeComponent implements Component {
+public class TypeComponent implements Component, Pool.Poolable {
     public enum Type {
-        PLAYER, ENEMY, SCENERY, SPRING, OTHER
+        PLAYER, ENEMY, SCENERY, SPRING, PROJECTILE, OTHER
     }
 
     public Type type = Type.OTHER;
+
+    @Override
+    public void reset() {
+        type = Type.OTHER;
+    }
 }

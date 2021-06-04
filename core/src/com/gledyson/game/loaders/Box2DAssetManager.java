@@ -23,7 +23,8 @@ public class Box2DAssetManager {
 
     // Sounds
     public static final String BOING_SOUND = "game/sounds/boing.wav";
-    public static final String PING_SOUND = "game/sounds/ping.wav";
+    public static final String SHOT_SOUND = "game/sounds/shot.wav";
+    public static final String MAN_DYING_SOUND = "game/sounds/man-dying.wav";
 
     // Music
     public static final String BIO_UNIT_MUSIC = "game/music/Bio Unit - Zone.mp3";
@@ -50,7 +51,8 @@ public class Box2DAssetManager {
 
     public void queueAddSounds() {
         manager.load(BOING_SOUND, Sound.class);
-        manager.load(PING_SOUND, Sound.class);
+        manager.load(SHOT_SOUND, Sound.class);
+        manager.load(MAN_DYING_SOUND, Sound.class);
     }
 
     public void queueAddMusic() {

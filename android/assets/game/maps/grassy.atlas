@@ -4,16 +4,16 @@ size: 512, 128
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
-arbusto
+arbust
   rotate: false
-  xy: 256, 32
+  xy: 288, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ceu-1.png
   rotate: false
-  xy: 256, 0
+  xy: 288, 0
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -37,5 +37,19 @@ grassy-ground
   xy: 256, 64
   size: 128, 64
   orig: 128, 64
+  offset: 0, 0
+  index: -1
+pine-tree
+  rotate: false
+  xy: 256, 0
+  size: 32, 64
+  orig: 32, 64
+  offset: 0, 0
+  index: -1
+trunk
+  rotate: false
+  xy: 384, 96
+  size: 32, 32
+  orig: 32, 32
   offset: 0, 0
   index: -1

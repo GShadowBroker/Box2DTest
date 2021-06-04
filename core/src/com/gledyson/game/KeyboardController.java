@@ -2,7 +2,7 @@ package com.gledyson.game;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 public class KeyboardController implements InputProcessor {
     private static final String TAG = KeyboardController.class.getSimpleName();
@@ -10,7 +10,7 @@ public class KeyboardController implements InputProcessor {
 
     public boolean mouse1, mouse2, mouse3;
     public boolean isDragged;
-    public final Vector2 mousePos = new Vector2(0f, 0f);
+    public final Vector3 mousePos = new Vector3(0f, 0f, 0f);
 
     @Override
     public boolean keyDown(int keycode) {
@@ -78,7 +78,7 @@ public class KeyboardController implements InputProcessor {
         } else if (button == 2) {
             mouse3 = true;
         }
-        mousePos.set(screenX, screenY);
+        mousePos.set(screenX, screenY, 0f);
         return false;
     }
 
@@ -92,21 +92,20 @@ public class KeyboardController implements InputProcessor {
         } else if (button == 2) {
             mouse3 = false;
         }
-        mousePos.set(screenX, screenY);
+        mousePos.set(screenX, screenY, 0f);
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         isDragged = true;
-        mousePos.set(screenX, screenY);
+        mousePos.set(screenX, screenY, 0f);
         return false;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-//        Gdx.app.log(TAG, "x: " + screenX + ", y: " + screenY);
-        mousePos.set(screenX, screenY);
+        mousePos.set(screenX, screenY, 0f);
         return false;
     }
 

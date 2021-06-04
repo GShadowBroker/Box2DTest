@@ -30,9 +30,6 @@ public class RenderingSystem extends SortedIteratingSystem {
     public static final float FRUSTUM_WIDTH = Gdx.graphics.getWidth() / PPM;
     public static final float FRUSTUM_HEIGHT = Gdx.graphics.getHeight() / PPM;
 
-    private final int[] foregrounds = {2, 3};
-    private final int[] backgrounds = {0, 1};
-
     // static method to get screen width in meters
     private static final Vector2 meterDimensions = new Vector2();
     private static final Vector2 pixelDimensions = new Vector2();
@@ -92,6 +89,9 @@ public class RenderingSystem extends SortedIteratingSystem {
             float height = textureC.region.getRegionHeight() / 4f;
 //            float width = 1f * PPM;
 //            float height = 1f * PPM;
+
+            float x = transformC.position.x - (width / 2f);
+            float y = transformC.position.y - (height / 2f);
 
             // batch.draw(textureRegion, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
             batch.draw(

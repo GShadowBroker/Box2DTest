@@ -6,77 +6,112 @@ filter: Nearest, Nearest
 repeat: none
 brazil-bg
   rotate: false
-  xy: 2, 214
+  xy: 0, 272
   size: 720, 720
   orig: 720, 720
   offset: 0, 0
   index: -1
 enemy-1
   rotate: false
-  xy: 724, 676
+  xy: 848, 864
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-2
   rotate: false
-  xy: 724, 286
+  xy: 848, 480
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-3
   rotate: false
-  xy: 724, 546
+  xy: 848, 736
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-4
   rotate: false
-  xy: 724, 806
+  xy: 0, 64
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
+hueball-1
+  rotate: false
+  xy: 128, 128
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+hueball-2
+  rotate: false
+  xy: 208, 208
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+hueball-3
+  rotate: false
+  xy: 720, 288
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+hueball-4
+  rotate: false
+  xy: 0, 0
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 platform
   rotate: false
-  xy: 2, 132
+  xy: 0, 192
   size: 208, 80
   orig: 208, 80
   offset: 0, 0
   index: -1
 player-1
   rotate: false
-  xy: 854, 676
+  xy: 720, 480
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-2
   rotate: false
-  xy: 2, 2
+  xy: 720, 736
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-3
   rotate: false
-  xy: 854, 546
+  xy: 720, 352
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-4
   rotate: false
-  xy: 854, 806
+  xy: 720, 608
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-springs
+spring-1
   rotate: false
-  xy: 724, 416
+  xy: 720, 864
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+spring-2
+  rotate: false
+  xy: 848, 608
   size: 128, 128
   orig: 128, 128
   offset: 0, 0

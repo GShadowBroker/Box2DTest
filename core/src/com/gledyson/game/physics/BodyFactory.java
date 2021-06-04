@@ -116,7 +116,7 @@ public class BodyFactory {
         return boxBody;
     }
 
-    public Body makePoly(
+    public Body makePolygon(
             float posX, float posY, Vector2[] vertices,
             Material material, BodyDef.BodyType bodyType
     ) {
