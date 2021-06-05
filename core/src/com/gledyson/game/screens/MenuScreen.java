@@ -35,7 +35,7 @@ public class MenuScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
-        stage.act(Math.min(delta, 1 / 30f));
+        stage.act();
         stage.draw();
     }
 

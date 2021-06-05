@@ -2,7 +2,6 @@ package com.gledyson.game;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -34,21 +33,16 @@ import com.gledyson.game.components.TypeComponent;
 import com.gledyson.game.physics.BodyFactory;
 import com.gledyson.game.physics.Box2DContactListener;
 import com.gledyson.game.systems.RenderingSystem;
-import com.gledyson.game.utils.SimplexNoise;
 
 public class LevelFactory implements Disposable {
     private static final String TAG = LevelFactory.class.getSimpleName();
     public final World world;
     private final BodyFactory factory;
     private final PooledEngine engine;
-    private final SimplexNoise simplexNoise;
-    private final SimplexNoise roughSimplexNoise;
 
     public static final Vector2 GRAVITY_VECTOR = new Vector2(0f, -18.6f);
 
     private final TextureAtlas atlas;
-
-    public int currentLevel = 0;
 
     public LevelFactory(PooledEngine engine, TextureAtlas atlas) {
         this.engine = engine;
@@ -58,46 +52,7 @@ public class LevelFactory implements Disposable {
         this.atlas = atlas;
 
         this.factory = BodyFactory.getInstance(world);
-        this.simplexNoise = new SimplexNoise(512, 0.85d, 1);
-        this.roughSimplexNoise = new SimplexNoise(512, 0.95d, 1);
     }
-
-//    public void generateLevel(int yLevel) {
-//        while (yLevel > currentLevel) {
-//            // get noise -> sim.getNoise(x,y,z) -> 3D noise
-//            float noise1 = (float) simplexNoise.getNoise(1, currentLevel, 0); // plat1 should exist?
-//            float noise2 = (float) simplexNoise.getNoise(1, currentLevel, 100); // if so, where on x?
-//            float noise3 = (float) simplexNoise.getNoise(1, currentLevel, 200); // plat2 should exist?
-//            float noise4 = (float) simplexNoise.getNoise(1, currentLevel, 300); // if so, where on x?
-//
-//            float noise5 = (float) roughSimplexNoise.getNoise(1, currentLevel, 1400); // spring should exist on plat1?
-//            float noise6 = (float) roughSimplexNoise.getNoise(1, currentLevel, 2500); // spring should exist on plat2?
-//            float noise7 = (float) roughSimplexNoise.getNoise(1, currentLevel, 2700); // enemy should exist on plat1?
-//            float noise8 = (float) roughSimplexNoise.getNoise(1, currentLevel, 3000); // enemy should exist on plat2?
-//
-//            if (noise1 > 0.2f) {
-//                createPlatform(noise2 * 25f + 2f, currentLevel * 3f);
-//
-//                if (Math.abs(noise5) > 0.5f) {
-//                    createBouncyPlatform(noise2 * 25f + 2f, currentLevel * 3f);
-//                } else if (Math.abs(noise7) > 0.5f) {
-//                    createEnemy(noise2 * 25f + 2f, currentLevel * 3f + 0.65f);
-//                }
-//            }
-//
-//            if (noise3 > 0.2f) {
-//                createPlatform(noise4 * 25f + 2f, currentLevel * 3f);
-//
-//                if (Math.abs(noise6) > 0.4f) {
-//                    createBouncyPlatform(noise4 * 25f + 2f, currentLevel * 3f);
-//                } else if (Math.abs(noise8) > 0.5f) {
-//                    createEnemy(noise4 * 25f + 2f, currentLevel * 3f + 0.65f);
-//                }
-//            }
-//
-//            currentLevel++;
-//        }
-//    }
 
     public Entity createPlayer(TextureRegion playerTexture, OrthographicCamera camera) {
         Entity entity = engine.createEntity();
@@ -398,8 +353,6 @@ public class LevelFactory implements Disposable {
     public void createMapCollisions(MapObjects objects) {
         for (MapObject object : objects) {
 
-            Gdx.app.log(TAG, "name: " + object.getName());
-
             if (object instanceof PolygonMapObject) {
                 createPolyCollision((PolygonMapObject) object);
 
@@ -466,10 +419,6 @@ public class LevelFactory implements Disposable {
         Polygon polygon = object.getPolygon();
 
         float[] polyVertices = polygon.getTransformedVertices();
-
-        for (int i = 0; i < polyVertices.length; i++) {
-            Gdx.app.log(TAG, "vertice: " + polyVertices[i] / RenderingSystem.PPM);
-        }
 
         // convert float[] vertices to vector2[]
         Vector2[] vectorVertices = new Vector2[polyVertices.length / 2];

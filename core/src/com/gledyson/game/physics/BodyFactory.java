@@ -23,6 +23,10 @@ public class BodyFactory {
         this.world = world;
     }
 
+    public static void clearInstance() {
+        factoryInstance = null;
+    }
+
     public static BodyFactory getInstance(World world) {
         if (factoryInstance == null) {
             factoryInstance = new BodyFactory(world);
@@ -53,7 +57,7 @@ public class BodyFactory {
             case STONE:
                 fixture.density = 1f;
                 fixture.friction = 0.9f;
-                fixture.restitution = 0.01f;
+                fixture.restitution = 0f;
                 break;
             default:
                 fixture.density = 7f;

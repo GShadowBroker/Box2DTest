@@ -34,16 +34,13 @@ public class PlayerControlSystem extends IteratingSystem {
         Box2DBodyComponent bodyC = Mappers.body.get(entity);
         StateComponent stateC = Mappers.state.get(entity);
 
-//        Gdx.app.log(
-//                TAG, "Player state: " + stateC.get().toString()
-//        );
-
         // changes state according to current linear velocity (FALLING, MOVING etc)
         updateState(playerC, bodyC.body.getLinearVelocity(), stateC);
 
-        // check if on spring
         if (playerC.onSpring) {
             handleSpring(playerC, bodyC, stateC);
+        } else if (playerC.onPlatform && playerC.jumpsLeft == 0 && bodyC.body.getLinearVelocity().y == 0) {
+            playerC.jumpsLeft = playerC.maxJumps;
         }
 
         handleMovement(deltaTime, playerC, bodyC);
@@ -104,7 +101,7 @@ public class PlayerControlSystem extends IteratingSystem {
         if (controller.up && playerC.jumpsLeft > 0 && playerC.timeSinceLastJump > playerC.TIME_BETWEEN_JUMPS) {
 
             bodyC.body.applyLinearImpulse(
-                    0, 10f,
+                    0, 12f * bodyC.body.getMass(),
                     bodyC.body.getWorldCenter().x, bodyC.body.getWorldCenter().y,
                     true
             );
@@ -133,14 +130,10 @@ public class PlayerControlSystem extends IteratingSystem {
                     state.set(StateComponent.State.IDLE);
                 }
 
-                if (player.jumpsLeft != player.maxJumps) player.jumpsLeft = player.maxJumps;
-
             } else if (linearVelocity.x != 0 && linearVelocity.y > -0.05f && linearVelocity.y < 0.05f) {
                 if (state.get() != StateComponent.State.MOVING) {
                     state.set(StateComponent.State.MOVING);
                 }
-
-                if (player.jumpsLeft != player.maxJumps) player.jumpsLeft = player.maxJumps;
             }
         }
     }

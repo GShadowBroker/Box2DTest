@@ -34,6 +34,7 @@ public class CollisionSystem extends IteratingSystem {
 
         if (thisType == null || otherType == null) return;
 
+        // TODO fix bug where a bullet hits enemy at the same time as the enemy hits the bullet before it disappears.
         if (thisType.type == TypeComponent.Type.PLAYER) {
             handlePlayerCollision(entity, otherType);
         } else if (thisType.type == TypeComponent.Type.ENEMY) {
@@ -46,48 +47,17 @@ public class CollisionSystem extends IteratingSystem {
         collisionC.collisionEntity = null;
     }
 
-    private void handleProjectileCollision(Entity entity, Entity otherEntity, TypeComponent otherType) {
-
-        switch (otherType.type) {
-            case ENEMY:
-                sound.play(SoundEffect.SoundTrack.DYING);
-                Mappers.enemy.get(entity).isDead = true;
-                Mappers.projectile.get(otherEntity).isDead = true;
-                System.out.println("enemy got shot");
-                break;
-            case SCENERY:
-                Mappers.projectile.get(entity).isDead = true;
-                System.out.println("projectile hit scenery");
-                break;
-            case SPRING:
-                Mappers.projectile.get(entity).isDead = true;
-                System.out.println("projectile hit spring");
-                break;
-            case PROJECTILE:
-                Mappers.projectile.get(entity).isDead = true;
-                System.out.println("projectile got shot");
-            case OTHER:
-                Mappers.projectile.get(entity).isDead = true;
-                System.out.println("projectile hit other");
-                break;
-            default:
-                System.out.println("No matching type found");
-        }
-    }
-
     private void handlePlayerCollision(Entity entity, TypeComponent otherType) {
         switch (otherType.type) {
             case ENEMY:
                 sound.play(SoundEffect.SoundTrack.DYING);
                 Gdx.app.log(TAG, "player hit enemy");
                 Mappers.player.get(entity).isDead = true;
-                int score = (int) Mappers.player.get(entity).camera.position.y;
-                Gdx.app.log(TAG, "Your score: " + score);
-                game.changeScreen(Box2DGame.Screen.ENDGAME);
                 break;
             case SCENERY:
                 Gdx.app.log(TAG, "player hit scenery");
                 Mappers.player.get(entity).onPlatform = true;
+
                 break;
             case SPRING:
                 if (Mappers.body.get(entity).body.getLinearVelocity().y == 0f) break;
@@ -120,10 +90,42 @@ public class CollisionSystem extends IteratingSystem {
                 sound.play(SoundEffect.SoundTrack.DYING);
                 Mappers.enemy.get(enemy).isDead = true;
                 Mappers.projectile.get(otherEntity).isDead = true;
+                game.state.setScore(game.state.getScore() + 50);
                 System.out.println("enemy got shot");
                 break;
             case OTHER:
                 System.out.println("enemy hit other");
+                break;
+            default:
+                System.out.println("No matching type found");
+        }
+    }
+
+
+    private void handleProjectileCollision(Entity entity, Entity otherEntity, TypeComponent otherType) {
+
+        switch (otherType.type) {
+            case ENEMY:
+                sound.play(SoundEffect.SoundTrack.DYING);
+                Mappers.enemy.get(entity).isDead = true;
+                Mappers.projectile.get(otherEntity).isDead = true;
+                game.state.setScore(game.state.getScore() + 50);
+                System.out.println("enemy got shot");
+                break;
+            case SCENERY:
+                Mappers.projectile.get(entity).isDead = true;
+                System.out.println("projectile hit scenery");
+                break;
+            case SPRING:
+                Mappers.projectile.get(entity).isDead = true;
+                System.out.println("projectile hit spring");
+                break;
+            case PROJECTILE:
+                Mappers.projectile.get(entity).isDead = true;
+                System.out.println("projectile got shot");
+            case OTHER:
+                Mappers.projectile.get(entity).isDead = true;
+                System.out.println("projectile hit other");
                 break;
             default:
                 System.out.println("No matching type found");

@@ -13,8 +13,9 @@ import com.gledyson.game.screens.PreferencesScreen;
 public class Box2DGame extends Game {
     public SpriteBatch batch;
     public Box2DAssetManager assetManager;
-    public boolean debugMode = true;
-    private AppPreferences preferences;
+    public boolean debugMode = false;
+    public AppPreferences preferences;
+    public GameState state;
 
     public enum Screen {
         LOADING, MENU, MAIN, PREFERENCES, ENDGAME
@@ -33,6 +34,7 @@ public class Box2DGame extends Game {
         batch = new SpriteBatch();
         assetManager = new Box2DAssetManager();
         preferences = new AppPreferences(this);
+        state = new GameState();
 
         changeScreen(Screen.LOADING);
 
@@ -65,9 +67,7 @@ public class Box2DGame extends Game {
                 setScreen(menuScreen);
                 break;
             case MAIN:
-                if (mainScreen == null) {
-                    mainScreen = new MainScreen(this);
-                }
+                mainScreen = new MainScreen(this);
                 setScreen(mainScreen);
                 break;
             case PREFERENCES:
