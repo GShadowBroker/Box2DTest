@@ -6,6 +6,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.gledyson.game.components.Box2DBodyComponent;
 import com.gledyson.game.components.EnemyComponent;
 import com.gledyson.game.components.StateComponent;
+import com.gledyson.game.components.StateComponent.State;
 
 public class EnemySystem extends IteratingSystem {
 
@@ -23,6 +24,8 @@ public class EnemySystem extends IteratingSystem {
             bodyC.isDead = true;
         }
 
+        if (stateC.get() == State.DYING) return;
+
         float distanceFromOrigin = Math.abs(enemyC.xPosCenter - bodyC.body.getPosition().x);
 
         enemyC.goingLeft = (distanceFromOrigin > 1f) != enemyC.goingLeft; // check later
@@ -30,7 +33,7 @@ public class EnemySystem extends IteratingSystem {
         float speed = enemyC.goingLeft ? -0.5f : 0.5f;
 
         // if state is not moving, set it
-        if (stateC.get() != StateComponent.State.MOVING) stateC.set(StateComponent.State.MOVING);
+        if (stateC.get() != State.MOVING) stateC.set(State.MOVING);
 
         bodyC.body.setTransform(
                 bodyC.body.getPosition().x + speed * deltaTime,

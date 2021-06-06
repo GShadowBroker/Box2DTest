@@ -64,6 +64,11 @@ public class PhysicsSystem extends IteratingSystem {
                         bodyC.body.getPosition().y > mapHeight + 10f ||
                         bodyC.body.getPosition().y < -10f
                 ) {
+                    if (Mappers.player.get(entity) != null) {
+                        // if player fell off map, kill him
+                        Mappers.player.get(entity).isDead = true;
+                        continue;
+                    }
                     Gdx.app.log(TAG, "OUT OF BOUNDS: body killed!");
                     bodyC.isDead = true;
                 }

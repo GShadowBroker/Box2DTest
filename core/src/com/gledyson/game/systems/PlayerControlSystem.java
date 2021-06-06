@@ -34,6 +34,8 @@ public class PlayerControlSystem extends IteratingSystem {
         Box2DBodyComponent bodyC = Mappers.body.get(entity);
         StateComponent stateC = Mappers.state.get(entity);
 
+        if (stateC.get() == StateComponent.State.DYING) return;
+
         // changes state according to current linear velocity (FALLING, MOVING etc)
         updateState(playerC, bodyC.body.getLinearVelocity(), stateC);
 
@@ -66,7 +68,7 @@ public class PlayerControlSystem extends IteratingSystem {
 
         mouseDirection.set(controller.mousePos)
                 .sub(bodyC.body.getPosition().x, bodyC.body.getPosition().y, 0f).nor()
-                .scl(20f);
+                .scl(30f);
 
         projectileLinearVelocity.set(mouseDirection.x, mouseDirection.y);
 

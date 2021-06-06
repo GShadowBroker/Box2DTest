@@ -3,11 +3,14 @@ package com.gledyson.game.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.gledyson.game.Box2DGame;
 import com.gledyson.game.audio.SoundEffect;
 import com.gledyson.game.components.CollisionComponent;
 import com.gledyson.game.components.TypeComponent;
+import com.gledyson.game.physics.BodyFactory;
+
+import static com.gledyson.game.components.StateComponent.State.DYING;
 
 public class CollisionSystem extends IteratingSystem {
     private static final String TAG = CollisionSystem.class.getSimpleName();
@@ -36,7 +39,7 @@ public class CollisionSystem extends IteratingSystem {
 
         // TODO fix bug where a bullet hits enemy at the same time as the enemy hits the bullet before it disappears.
         if (thisType.type == TypeComponent.Type.PLAYER) {
-            handlePlayerCollision(entity, otherType);
+            handlePlayerCollision(entity, otherEntity, otherType);
         } else if (thisType.type == TypeComponent.Type.ENEMY) {
             handleEnemyCollision(entity, otherEntity, otherType);
         } else if (thisType.type == TypeComponent.Type.PROJECTILE) {
@@ -47,25 +50,27 @@ public class CollisionSystem extends IteratingSystem {
         collisionC.collisionEntity = null;
     }
 
-    private void handlePlayerCollision(Entity entity, TypeComponent otherType) {
+    private void handlePlayerCollision(Entity entity, Entity otherEntity, TypeComponent otherType) {
         switch (otherType.type) {
             case ENEMY:
-                sound.play(SoundEffect.SoundTrack.DYING);
-                Gdx.app.log(TAG, "player hit enemy");
-                Mappers.player.get(entity).isDead = true;
+                if (Mappers.state.get(entity).get() != DYING &&
+                        Mappers.state.get(otherEntity).get() != DYING
+                ) {
+                    sound.play(SoundEffect.SoundTrack.DYING);
+                    Mappers.state.get(entity).set(DYING);
+                    Mappers.body.get(entity).body.setType(BodyDef.BodyType.StaticBody);
+                    BodyFactory.makeAllFixturesSensors(Mappers.body.get(entity).body);
+                }
                 break;
             case SCENERY:
-                Gdx.app.log(TAG, "player hit scenery");
                 Mappers.player.get(entity).onPlatform = true;
-
                 break;
             case SPRING:
                 if (Mappers.body.get(entity).body.getLinearVelocity().y == 0f) break;
-                Gdx.app.log(TAG, "player hit spring");
                 Mappers.player.get(entity).onSpring = true;
+                Mappers.spring.get(otherEntity).pressed = true;
                 break;
             case OTHER:
-                Gdx.app.log(TAG, "player hit other");
                 break;
             default:
                 // do nothing
@@ -87,11 +92,17 @@ public class CollisionSystem extends IteratingSystem {
                 System.out.println("enemy hit spring");
                 break;
             case PROJECTILE:
-                sound.play(SoundEffect.SoundTrack.DYING);
-                Mappers.enemy.get(enemy).isDead = true;
-                Mappers.projectile.get(otherEntity).isDead = true;
-                game.state.setScore(game.state.getScore() + 50);
+                Mappers.collision.get(otherEntity).collisionEntity = null;
+
+                if (Mappers.state.get(enemy).get() != DYING) {
+                    sound.play(SoundEffect.SoundTrack.DYING);
+                    Mappers.state.get(enemy).set(DYING);
+                    BodyFactory.makeAllFixturesSensors(Mappers.body.get(enemy).body);
+                    Mappers.projectile.get(otherEntity).isDead = true;
+                    game.state.setScore(game.state.getScore() + 50);
+                }
                 System.out.println("enemy got shot");
+
                 break;
             case OTHER:
                 System.out.println("enemy hit other");
@@ -106,11 +117,17 @@ public class CollisionSystem extends IteratingSystem {
 
         switch (otherType.type) {
             case ENEMY:
-                sound.play(SoundEffect.SoundTrack.DYING);
-                Mappers.enemy.get(entity).isDead = true;
-                Mappers.projectile.get(otherEntity).isDead = true;
-                game.state.setScore(game.state.getScore() + 50);
+                Mappers.collision.get(otherEntity).collisionEntity = null;
+
+                if (Mappers.state.get(otherEntity).get() != DYING) {
+                    sound.play(SoundEffect.SoundTrack.DYING);
+                    Mappers.state.get(otherEntity).set(DYING);
+                    BodyFactory.makeAllFixturesSensors(Mappers.body.get(otherEntity).body);
+                    Mappers.projectile.get(entity).isDead = true;
+                    game.state.setScore(game.state.getScore() + 50);
+                }
                 System.out.println("enemy got shot");
+
                 break;
             case SCENERY:
                 Mappers.projectile.get(entity).isDead = true;

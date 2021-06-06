@@ -27,6 +27,7 @@ import com.gledyson.game.systems.PhysicsSystem;
 import com.gledyson.game.systems.PlayerControlSystem;
 import com.gledyson.game.systems.ProjectileSystem;
 import com.gledyson.game.systems.RenderingSystem;
+import com.gledyson.game.systems.SpringSystem;
 import com.gledyson.game.utils.FrameRate;
 
 public class MainScreen implements Screen {
@@ -84,6 +85,7 @@ public class MainScreen implements Screen {
 //        engine.addSystem(new LiquidFloorSystem(player));
         engine.addSystem(new EnemySystem());
         engine.addSystem(new ProjectileSystem());
+        engine.addSystem(new SpringSystem());
         engine.addSystem(new CameraSystem(map));
         engine.addSystem(new PhysicsSystem(lvlFactory.world, engine, map));
         engine.addSystem(new PhysicsDebugSystem(lvlFactory.world, camera, game));

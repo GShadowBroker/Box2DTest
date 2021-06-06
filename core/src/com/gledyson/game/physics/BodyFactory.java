@@ -165,7 +165,7 @@ public class BodyFactory {
         return body;
     }
 
-    public void makeAllFixturesSensors(Body body) {
+    public static void makeAllFixturesSensors(Body body) {
         for (Fixture fixture : body.getFixtureList()) {
             fixture.setSensor(true);
         }

@@ -13,58 +13,30 @@ brazil-bg
   index: -1
 enemy-1
   rotate: false
-  xy: 848, 864
+  xy: 848, 736
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-2
   rotate: false
-  xy: 848, 480
+  xy: 848, 224
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-3
   rotate: false
-  xy: 848, 736
+  xy: 848, 480
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-4
   rotate: false
-  xy: 0, 64
+  xy: 720, 736
   size: 128, 128
   orig: 128, 128
-  offset: 0, 0
-  index: -1
-hueball-1
-  rotate: false
-  xy: 128, 128
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-hueball-2
-  rotate: false
-  xy: 208, 208
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-hueball-3
-  rotate: false
-  xy: 720, 288
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
-hueball-4
-  rotate: false
-  xy: 0, 0
-  size: 64, 64
-  orig: 64, 64
   offset: 0, 0
   index: -1
 platform
@@ -76,42 +48,119 @@ platform
   index: -1
 player-1
   rotate: false
-  xy: 720, 480
+  xy: 208, 144
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-2
   rotate: false
-  xy: 720, 736
+  xy: 848, 864
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-3
   rotate: false
-  xy: 720, 352
+  xy: 592, 144
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-4
   rotate: false
-  xy: 720, 608
+  xy: 848, 608
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-spring-1
+projectile
+  rotate: false
+  xy: 0, 0
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 1
+projectile
+  rotate: false
+  xy: 128, 128
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 0
+projectile
+  rotate: false
+  xy: 848, 160
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 2
+puff
   rotate: false
   xy: 720, 864
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 3
+puff
+  rotate: false
+  xy: 720, 608
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+puff
+  rotate: false
+  xy: 720, 480
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 5
+puff
+  rotate: false
+  xy: 720, 352
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+puff
+  rotate: false
+  xy: 848, 352
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 7
+puff
+  rotate: false
+  xy: 336, 144
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 4
+puff
+  rotate: false
+  xy: 720, 224
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
+puff
+  rotate: false
+  xy: 720, 96
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 6
+spring-1
+  rotate: false
+  xy: 0, 64
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 spring-2
   rotate: false
-  xy: 848, 608
+  xy: 464, 144
   size: 128, 128
   orig: 128, 128
   offset: 0, 0

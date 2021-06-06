@@ -8,6 +8,7 @@ import com.gledyson.game.components.EnemyComponent;
 import com.gledyson.game.components.LiquidFloorComponent;
 import com.gledyson.game.components.PlayerComponent;
 import com.gledyson.game.components.ProjectileComponent;
+import com.gledyson.game.components.SpringComponent;
 import com.gledyson.game.components.StateComponent;
 import com.gledyson.game.components.TextureComponent;
 import com.gledyson.game.components.TransformComponent;
@@ -25,4 +26,5 @@ public class Mappers {
     public static final ComponentMapper<TypeComponent> type = ComponentMapper.getFor(TypeComponent.class);
     public static final ComponentMapper<StateComponent> state = ComponentMapper.getFor(StateComponent.class);
     public static final ComponentMapper<ProjectileComponent> projectile = ComponentMapper.getFor(ProjectileComponent.class);
+    public static final ComponentMapper<SpringComponent> spring = ComponentMapper.getFor(SpringComponent.class);
 }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Pool;
 public class StateComponent implements Component, Pool.Poolable {
 
     public enum State {
-        IDLE, JUMPING, FALLING, MOVING, HIT
+        IDLE, JUMPING, FALLING, MOVING, HIT, DYING
     }
 
     private State state = State.IDLE;

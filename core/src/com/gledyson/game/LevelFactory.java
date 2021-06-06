@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.gledyson.game.components.AnimationComponent;
 import com.gledyson.game.components.Box2DBodyComponent;
@@ -26,6 +27,7 @@ import com.gledyson.game.components.EnemyComponent;
 import com.gledyson.game.components.LiquidFloorComponent;
 import com.gledyson.game.components.PlayerComponent;
 import com.gledyson.game.components.ProjectileComponent;
+import com.gledyson.game.components.SpringComponent;
 import com.gledyson.game.components.StateComponent;
 import com.gledyson.game.components.TextureComponent;
 import com.gledyson.game.components.TransformComponent;
@@ -94,10 +96,14 @@ public class LevelFactory implements Disposable {
         Animation<TextureRegion> idleAnimation = new Animation<>(0.125f, framesArray);
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 
+        Array<TextureAtlas.AtlasRegion> dyingEffect = atlas.findRegions("puff");
+        Animation<TextureRegion> dyingAnimation = new Animation<TextureRegion>(0.07f, dyingEffect);
+
         animationC.animations.put(StateComponent.State.IDLE, idleAnimation);
         animationC.animations.put(StateComponent.State.MOVING, idleAnimation);
         animationC.animations.put(StateComponent.State.JUMPING, idleAnimation);
         animationC.animations.put(StateComponent.State.FALLING, idleAnimation);
+        animationC.animations.put(StateComponent.State.DYING, dyingAnimation);
 
         // add components to entity
         entity.add(bodyC);
@@ -154,9 +160,13 @@ public class LevelFactory implements Disposable {
         };
 
         Animation<TextureRegion> walkingAnimation = new Animation<>(0.125f, framesArray);
-        walkingAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+        walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
+
+        Array<TextureAtlas.AtlasRegion> dyingEffect = atlas.findRegions("puff");
+        Animation<TextureRegion> dyingAnimation = new Animation<TextureRegion>(0.07f, dyingEffect);
 
         animationC.animations.put(StateComponent.State.MOVING, walkingAnimation);
+        animationC.animations.put(StateComponent.State.DYING, dyingAnimation);
 
         typeC.type = TypeComponent.Type.ENEMY;
 
@@ -205,6 +215,7 @@ public class LevelFactory implements Disposable {
         TextureComponent textureC = engine.createComponent(TextureComponent.class);
         TypeComponent typeC = engine.createComponent(TypeComponent.class);
         TransformComponent transformC = engine.createComponent(TransformComponent.class);
+        SpringComponent springC = engine.createComponent(SpringComponent.class);
 
         // body
         bodyC.body = factory.makeRectangle(
@@ -214,7 +225,12 @@ public class LevelFactory implements Disposable {
         bodyC.body.setUserData(entity);
 
         // texture
-        textureC.region = atlas.findRegion("spring-1");
+        TextureRegion sp1 = atlas.findRegion("spring-1");
+        TextureRegion sp2 = atlas.findRegion("spring-2");
+
+        textureC.region = sp1;
+        springC.frames[0] = sp1;
+        springC.frames[1] = sp2;
 
         // position
         transformC.position.set(posX, posY, 0f);
@@ -227,6 +243,7 @@ public class LevelFactory implements Disposable {
         entity.add(textureC);
         entity.add(typeC);
         entity.add(transformC);
+        entity.add(springC);
 
         engine.addEntity(entity);
     }
@@ -272,7 +289,7 @@ public class LevelFactory implements Disposable {
                 20, -40, 100, 40,
                 BodyFactory.Material.STONE, BodyDef.BodyType.KinematicBody, true);
         bodyC.body.setUserData(entity);
-        factory.makeAllFixturesSensors(bodyC.body); // make it a sensor
+        BodyFactory.makeAllFixturesSensors(bodyC.body); // make it a sensor
 
         // position
         transformC.position.set(20, -15, 0);
@@ -305,30 +322,25 @@ public class LevelFactory implements Disposable {
         ProjectileComponent projectileComponent = engine.createComponent(ProjectileComponent.class);
         StateComponent stateComponent = engine.createComponent(StateComponent.class);
 
-        bodyComponent.body = factory.makeCircle(
-                posX, posY, 0.5f,
-                BodyFactory.Material.STONE, BodyDef.BodyType.DynamicBody, true
-        );
+//        bodyComponent.body = factory.makeCircle(
+//                posX, posY, 0.5f,
+//                BodyFactory.Material.STONE, BodyDef.BodyType.DynamicBody, true
+//        );
+        bodyComponent.body = factory.makeRectangle(posX, posY, 0.5f, 0.25f,
+                BodyFactory.Material.STONE, BodyDef.BodyType.DynamicBody, true);
+
         bodyComponent.body.setBullet(true);
-        factory.makeAllFixturesSensors(bodyComponent.body);
+        BodyFactory.makeAllFixturesSensors(bodyComponent.body);
 
         transformComponent.position.set(posX, posY, 0f);
         transformComponent.rotation = linearVelocity.angleDeg();
 
-        textureComponent.region = atlas.findRegion("hueball-1");
+        Array<TextureAtlas.AtlasRegion> projectileFrames = atlas.findRegions("projectile");
+        textureComponent.region = projectileFrames.get(0);
 
-        // animations
-        TextureRegion h1 = atlas.findRegion("hueball-1");
-        TextureRegion h2 = atlas.findRegion("hueball-2");
-        TextureRegion h3 = atlas.findRegion("hueball-3");
-        TextureRegion h4 = atlas.findRegion("hueball-4");
+        Animation<TextureRegion> projectileAnimation = new Animation<TextureRegion>(0.07f, projectileFrames);
 
-        TextureRegion[] framesArray = {h1, h2, h3, h4};
-
-        Animation<TextureRegion> hueballAnimation = new Animation<>(0.125f, framesArray);
-        hueballAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-
-        animationComponent.animations.put(StateComponent.State.MOVING, hueballAnimation);
+        animationComponent.animations.put(StateComponent.State.MOVING, projectileAnimation);
 
         projectileComponent.linearVelocity.set(linearVelocity);
 
