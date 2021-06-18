@@ -22,7 +22,8 @@ public class AnimationSystem extends IteratingSystem {
         AnimationComponent animationComponent = Mappers.animation.get(entity);
         StateComponent stateComponent = Mappers.state.get(entity);
 
-        if (animationComponent.animations.containsKey(stateComponent.get())) {
+        if (!animationComponent.animations.containsKey(stateComponent.get())) return;
+
             Animation<TextureRegion> animation = animationComponent.animations.get(stateComponent.get());
 
             Mappers.texture.get(entity).region = animation.getKeyFrame(
@@ -49,6 +50,6 @@ public class AnimationSystem extends IteratingSystem {
                         // do nothing
                 }
             }
-        }
+
     }
 }

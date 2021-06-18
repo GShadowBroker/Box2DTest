@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 
 public class GameState {
     private int score = 0;
-    private int level = 0;
+    private int level = 0; // index of the map array
     private int continues = 1;
 
     public int getScore() {
@@ -21,6 +21,9 @@ public class GameState {
 
     public void passLevel() {
         this.level += 1;
+    }
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public int getContinues() {

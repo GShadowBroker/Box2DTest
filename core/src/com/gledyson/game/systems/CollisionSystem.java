@@ -3,12 +3,16 @@ package com.gledyson.game.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.gledyson.game.Box2DGame;
 import com.gledyson.game.audio.SoundEffect;
+import com.gledyson.game.components.CollectibleComponent;
 import com.gledyson.game.components.CollisionComponent;
 import com.gledyson.game.components.TypeComponent;
 import com.gledyson.game.physics.BodyFactory;
+import com.gledyson.game.screens.MainScreen;
 
 import static com.gledyson.game.components.StateComponent.State.DYING;
 
@@ -16,13 +20,14 @@ public class CollisionSystem extends IteratingSystem {
     private static final String TAG = CollisionSystem.class.getSimpleName();
 
     private final Box2DGame game;
+    private final MainScreen mainScreen;
     private final SoundEffect sound;
 
-    public CollisionSystem(Box2DGame game, SoundEffect sound) {
-        // only need to worry about player collisions for now
+    public CollisionSystem(Box2DGame game, MainScreen mainScreen, SoundEffect sound) {
         super(Family.all(CollisionComponent.class, TypeComponent.class).get());
         this.game = game;
         this.sound = sound;
+        this.mainScreen = mainScreen;
     }
 
     @Override
@@ -44,6 +49,12 @@ public class CollisionSystem extends IteratingSystem {
             handleEnemyCollision(entity, otherEntity, otherType);
         } else if (thisType.type == TypeComponent.Type.PROJECTILE) {
             handleProjectileCollision(entity, otherEntity, otherType);
+        } else if (thisType.type == TypeComponent.Type.GOAL) {
+            switch (otherType.type) {
+                case PLAYER:
+                    mainScreen.handlePassLevel();
+                    break;
+            }
         }
 
         // collision handled. reset.
@@ -56,10 +67,22 @@ public class CollisionSystem extends IteratingSystem {
                 if (Mappers.state.get(entity).get() != DYING &&
                         Mappers.state.get(otherEntity).get() != DYING
                 ) {
+                    Body playerBody = Mappers.body.get(entity).body;
+                    Body gunBody = Mappers.body.get(Mappers.player.get(entity).gun).body;
+
                     sound.play(SoundEffect.SoundTrack.DYING);
                     Mappers.state.get(entity).set(DYING);
-                    Mappers.body.get(entity).body.setType(BodyDef.BodyType.StaticBody);
+                    playerBody.setType(BodyDef.BodyType.StaticBody);
                     BodyFactory.makeAllFixturesSensors(Mappers.body.get(entity).body);
+
+                    // transfer linear velocity from player to gun on death, so it is "flung" away
+                    gunBody.setType(BodyDef.BodyType.DynamicBody);
+                    BodyFactory.removeAllSensors(gunBody);
+                    gunBody.applyLinearImpulse(
+                            playerBody.getLinearVelocity().x, playerBody.getLinearVelocity().y + 1f,
+                            gunBody.getWorldCenter().x, gunBody.getWorldCenter().y,
+                            true
+                    );
                 }
                 break;
             case SCENERY:
@@ -69,6 +92,13 @@ public class CollisionSystem extends IteratingSystem {
                 if (Mappers.body.get(entity).body.getLinearVelocity().y == 0f) break;
                 Mappers.player.get(entity).onSpring = true;
                 Mappers.spring.get(otherEntity).pressed = true;
+                break;
+            case COLLECTIBLE:
+                handleCollectible(otherEntity);
+                break;
+            case GOAL:
+                Gdx.app.log(TAG, "CONGRATS! YOU HAVE PASSED THE LEVEL!");
+                mainScreen.handlePassLevel();
                 break;
             case OTHER:
                 break;
@@ -146,6 +176,24 @@ public class CollisionSystem extends IteratingSystem {
                 break;
             default:
                 System.out.println("No matching type found");
+        }
+    }
+
+    private void handleCollectible(Entity otherEntity) {
+        CollectibleComponent collectibleC = Mappers.collectible.get(otherEntity);
+        switch (collectibleC.type) {
+            case DOLLAR:
+                if (!collectibleC.isCollected) {
+                    collectibleC.isCollected = true;
+                    sound.play(SoundEffect.SoundTrack.LOOT);
+                    game.state.setScore(game.state.getScore() + 500);
+                }
+                break;
+            case AMMO:
+                Gdx.app.log(TAG, "collected ammo");
+                break;
+            default:
+                // skip
         }
     }
 }

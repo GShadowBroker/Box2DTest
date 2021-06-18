@@ -1,4 +1,4 @@
-package com.gledyson.game;
+package com.gledyson.game.controller;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 public class KeyboardController implements InputProcessor {
     private static final String TAG = KeyboardController.class.getSimpleName();
     public boolean up, down, left, right;
+    public boolean reload;
 
     public boolean mouse1, mouse2, mouse3;
     public boolean isDragged;
@@ -30,6 +31,10 @@ public class KeyboardController implements InputProcessor {
                 break;
             case Input.Keys.DOWN:
                 down = true;
+                keyProcessed = true;
+                break;
+            case Input.Keys.R:
+                reload = true;
                 keyProcessed = true;
                 break;
             default:
@@ -57,6 +62,10 @@ public class KeyboardController implements InputProcessor {
             case Input.Keys.DOWN:
                 down = false;
                 keyProcessed = true;
+                break;
+            case Input.Keys.R:
+                reload = false;
+                keyProcessed = false;
                 break;
             default:
                 // do nothing

@@ -25,12 +25,16 @@ public class Box2DAssetManager {
     public static final String BOING_SOUND = "game/sounds/boing.wav";
     public static final String SHOT_SOUND = "game/sounds/shot.wav";
     public static final String MAN_DYING_SOUND = "game/sounds/man-dying.wav";
+    public static final String OUT_OF_AMMO_SOUND = "game/sounds/out_of_ammo.wav";
+    public static final String HANDGUN_RELOAD_SOUND = "game/sounds/handgun_reload.wav";
+    public static final String LOOT_SOUND = "game/sounds/loot.wav";
 
     // Music
     public static final String BIO_UNIT_MUSIC = "game/music/Bio Unit - Zone.mp3";
 
     // Maps
-    public static final String LEVEL_1_MAP = "game/maps/grassy-ground.tmx";
+    public static final String LEVEL_1_MAP = "game/maps/level_1.tmx";
+    public static final String LEVEL_2_MAP = "game/maps/level_2.tmx";
 
     public void queueAddGameImages() {
         // atlas
@@ -43,6 +47,7 @@ public class Box2DAssetManager {
         // maps
         manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         manager.load(LEVEL_1_MAP, TiledMap.class);
+        manager.load(LEVEL_2_MAP, TiledMap.class);
     }
 
     public void queueAddLoadingImages() {
@@ -53,6 +58,9 @@ public class Box2DAssetManager {
         manager.load(BOING_SOUND, Sound.class);
         manager.load(SHOT_SOUND, Sound.class);
         manager.load(MAN_DYING_SOUND, Sound.class);
+        manager.load(OUT_OF_AMMO_SOUND, Sound.class);
+        manager.load(HANDGUN_RELOAD_SOUND, Sound.class);
+        manager.load(LOOT_SOUND, Sound.class);
     }
 
     public void queueAddMusic() {

@@ -27,7 +27,7 @@ public class PhysicsDebugSystem extends IteratingSystem {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        if (game.debugMode) debugRenderer.render(world, camera.combined);
+        if (game.debugRendererActive) debugRenderer.render(world, camera.combined);
     }
 
     @Override

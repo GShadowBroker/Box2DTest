@@ -3,13 +3,16 @@ package com.gledyson.game.systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.gledyson.game.components.AnimationComponent;
 import com.gledyson.game.components.Box2DBodyComponent;
+import com.gledyson.game.components.CollectibleComponent;
 import com.gledyson.game.components.CollisionComponent;
 import com.gledyson.game.components.EnemyComponent;
+import com.gledyson.game.components.GunComponent;
 import com.gledyson.game.components.LiquidFloorComponent;
 import com.gledyson.game.components.PlayerComponent;
 import com.gledyson.game.components.ProjectileComponent;
 import com.gledyson.game.components.SpringComponent;
 import com.gledyson.game.components.StateComponent;
+import com.gledyson.game.components.SteeringComponent;
 import com.gledyson.game.components.TextureComponent;
 import com.gledyson.game.components.TransformComponent;
 import com.gledyson.game.components.TypeComponent;
@@ -27,4 +30,7 @@ public class Mappers {
     public static final ComponentMapper<StateComponent> state = ComponentMapper.getFor(StateComponent.class);
     public static final ComponentMapper<ProjectileComponent> projectile = ComponentMapper.getFor(ProjectileComponent.class);
     public static final ComponentMapper<SpringComponent> spring = ComponentMapper.getFor(SpringComponent.class);
+    public static final ComponentMapper<GunComponent> gun = ComponentMapper.getFor(GunComponent.class);
+    public static final ComponentMapper<SteeringComponent> steering = ComponentMapper.getFor(SteeringComponent.class);
+    public static final ComponentMapper<CollectibleComponent> collectible = ComponentMapper.getFor(CollectibleComponent.class);
 }

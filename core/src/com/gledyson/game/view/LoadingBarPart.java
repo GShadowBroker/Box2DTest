@@ -1,4 +1,4 @@
-package com.gledyson.game;
+package com.gledyson.game.view;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;

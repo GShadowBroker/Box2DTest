@@ -3,15 +3,16 @@ package com.gledyson.game.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.gledyson.game.KeyboardController;
 import com.gledyson.game.LevelFactory;
 import com.gledyson.game.audio.SoundEffect;
 import com.gledyson.game.components.Box2DBodyComponent;
 import com.gledyson.game.components.PlayerComponent;
 import com.gledyson.game.components.StateComponent;
+import com.gledyson.game.controller.KeyboardController;
 
 public class PlayerControlSystem extends IteratingSystem {
     private static final String TAG = PlayerControlSystem.class.getSimpleName();
@@ -45,7 +46,7 @@ public class PlayerControlSystem extends IteratingSystem {
             playerC.jumpsLeft = playerC.maxJumps;
         }
 
-        handleMovement(deltaTime, playerC, bodyC);
+        handleKeyboardInput(deltaTime, playerC, bodyC);
 
         if (controller.mouse1) {
             handleMouse1Input(entity, deltaTime, playerC, bodyC);
@@ -62,8 +63,13 @@ public class PlayerControlSystem extends IteratingSystem {
             PlayerComponent playerC,
             Box2DBodyComponent bodyC
     ) {
-        if (playerC.timeSinceLastShot < playerC.timeBetweenShots) return;
+        if (playerC.timeSinceLastShot < Mappers.gun.get(playerC.gun).fireRate) return;
 
+        if (Mappers.gun.get(playerC.gun).ammo == 0) {
+            sound.play(SoundEffect.SoundTrack.OUT_OF_AMMO);
+            playerC.timeSinceLastShot = 0f;
+            return; // TODO recharge gun if there are more bullets
+        }
         playerC.camera.unproject(controller.mousePos); // convert position from screen to box2d world
 
         mouseDirection.set(controller.mousePos)
@@ -81,9 +87,17 @@ public class PlayerControlSystem extends IteratingSystem {
         );
 
         playerC.timeSinceLastShot = 0f;
+        Mappers.gun.get(playerC.gun).ammo -= 1;
     }
 
-    private void handleMovement(float deltaTime, PlayerComponent playerC, Box2DBodyComponent bodyC) {
+    private void handleKeyboardInput(float deltaTime, PlayerComponent playerC, Box2DBodyComponent bodyC) {
+        if (controller.reload) {
+            if (Mappers.gun.get(playerC.gun).reload()) {
+                sound.play(SoundEffect.SoundTrack.HANDGUN_RELOAD);
+                Gdx.app.log(TAG, "ammo: " + Mappers.gun.get(playerC.gun).ammo + ", total: " + (Mappers.gun.get(playerC.gun).ammo + Mappers.gun.get(playerC.gun).spareBullets));
+            }
+        }
+
         if (controller.left) {
             bodyC.body.setLinearVelocity(
                     // lerp(from, to, progress);

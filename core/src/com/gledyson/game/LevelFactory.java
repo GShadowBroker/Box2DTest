@@ -12,7 +12,6 @@ import com.badlogic.gdx.maps.objects.EllipseMapObject;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Ellipse;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -20,15 +19,19 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.gledyson.game.ai.SteeringPresets;
 import com.gledyson.game.components.AnimationComponent;
 import com.gledyson.game.components.Box2DBodyComponent;
+import com.gledyson.game.components.CollectibleComponent;
 import com.gledyson.game.components.CollisionComponent;
 import com.gledyson.game.components.EnemyComponent;
+import com.gledyson.game.components.GunComponent;
 import com.gledyson.game.components.LiquidFloorComponent;
 import com.gledyson.game.components.PlayerComponent;
 import com.gledyson.game.components.ProjectileComponent;
 import com.gledyson.game.components.SpringComponent;
 import com.gledyson.game.components.StateComponent;
+import com.gledyson.game.components.SteeringComponent;
 import com.gledyson.game.components.TextureComponent;
 import com.gledyson.game.components.TransformComponent;
 import com.gledyson.game.components.TypeComponent;
@@ -68,19 +71,30 @@ public class LevelFactory implements Disposable {
         TypeComponent typeC = engine.createComponent(TypeComponent.class);
         StateComponent stateC = engine.createComponent(StateComponent.class);
         AnimationComponent animationC = engine.createComponent(AnimationComponent.class);
+        SteeringComponent steeringC = engine.createComponent(SteeringComponent.class);
 
         // create data for components and add them
         playerC.camera = camera;
         bodyC.body = factory.makeCircle(
-                12f, 5f, 1f,
+                12f, 7f, 1f,
                 BodyFactory.Material.STONE, BodyDef.BodyType.DynamicBody,
                 true);
         bodyC.body.setUserData(entity);
         transformC.position.set(12f, 5f, 0f); // z is the order of rendering
 
-//        textureC.region = playerTexture;
+        // create a gun -> for testing, can remove later
+        playerC.gun = createGun(
+                12f, 5f,
+                0.5f, 0.5f,
+                6, 0.5f
+        );
+
+        // textureC.region = playerTexture;
         typeC.type = TypeComponent.Type.PLAYER;
         stateC.set(StateComponent.State.IDLE);
+
+        steeringC.body = bodyC.body;
+        steeringC.currentMode = SteeringComponent.SteeringState.NONE;
 
         TextureRegion p1 = atlas.findRegion("player-1");
         TextureRegion p2 = atlas.findRegion("player-2");
@@ -109,6 +123,7 @@ public class LevelFactory implements Disposable {
         entity.add(bodyC);
         entity.add(playerC);
         entity.add(transformC);
+        entity.add(steeringC);
         entity.add(textureC);
         entity.add(collisionC);
         entity.add(typeC);
@@ -121,7 +136,7 @@ public class LevelFactory implements Disposable {
         return entity;
     }
 
-    public void createEnemy(float posX, float posY) {
+    public void createEnemy(float posX, float posY, EnemyComponent.Type enemyType) {
         Entity entity = engine.createEntity();
 
         EnemyComponent enemyC = engine.createComponent(EnemyComponent.class);
@@ -140,32 +155,38 @@ public class LevelFactory implements Disposable {
         bodyC.body.setUserData(entity);
         transformC.position.set(posX, posY, 0f);
 
-        enemyC.goingLeft = MathUtils.random() >= 0.5f;
+        enemyC.goingLeft = true;
         enemyC.xPosCenter = posX;
+        enemyC.type = enemyType;
 
-        textureC.region = atlas.findRegion("enemy-1");
+        textureC.region = atlas.findRegion("corona-1");
 
         stateC.set(StateComponent.State.IDLE);
 
         // animations
-        TextureRegion e1 = atlas.findRegion("enemy-1");
-        TextureRegion e2 = atlas.findRegion("enemy-2");
-        TextureRegion e3 = atlas.findRegion("enemy-3");
-        TextureRegion e4 = atlas.findRegion("enemy-4");
+        TextureRegion c1 = atlas.findRegion("corona-1");
+        TextureRegion c2 = atlas.findRegion("corona-2");
+        TextureRegion c3 = atlas.findRegion("corona-3");
+        TextureRegion c4 = atlas.findRegion("corona-4");
+        TextureRegion c5 = atlas.findRegion("corona-5");
 
         TextureRegion[] framesArray = {
-                e1, e1, e1, e1, e1, e1, e1,
-                e1, e1, e1, e1, e1, e1, e1,
-                e1, e2, e3, e4
+                c1, c1, c1, c1, c1, c1, c1, c1,
+                c1, c1, c1, c1, c1, c1, c1, c1,
+                c2, c2, c2, c2, c1, c1, c1, c1,
+                c1, c1, c1, c1, c1, c1, c1, c1,
+                c1, c1, c1, c1, c1, c1, c1, c1,
+                c1, c1, c1, c1, c1, c1, c1, c1,
+                c2, c2, c2, c2, c3, c4, c5, c3
         };
 
-        Animation<TextureRegion> walkingAnimation = new Animation<>(0.125f, framesArray);
-        walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        Animation<TextureRegion> smilingAnimation = new Animation<>(0.125f, framesArray);
+        smilingAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         Array<TextureAtlas.AtlasRegion> dyingEffect = atlas.findRegions("puff");
         Animation<TextureRegion> dyingAnimation = new Animation<TextureRegion>(0.07f, dyingEffect);
 
-        animationC.animations.put(StateComponent.State.MOVING, walkingAnimation);
+        animationC.animations.put(StateComponent.State.MOVING, smilingAnimation);
         animationC.animations.put(StateComponent.State.DYING, dyingAnimation);
 
         typeC.type = TypeComponent.Type.ENEMY;
@@ -180,6 +201,179 @@ public class LevelFactory implements Disposable {
         entity.add(stateC);
 
         engine.addEntity(entity);
+    }
+
+    public Entity createSeeker(float posX, float posY, EnemyComponent.Type enemyType) {
+        Entity entity = engine.createEntity();
+
+        Box2DBodyComponent bodyComponent = engine.createComponent(Box2DBodyComponent.class);
+        TransformComponent transformComponent = engine.createComponent(TransformComponent.class);
+        TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
+        AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
+        CollisionComponent collisionComponent = engine.createComponent(CollisionComponent.class);
+        TypeComponent typeComponent = engine.createComponent(TypeComponent.class);
+        StateComponent stateComponent = engine.createComponent(StateComponent.class);
+        EnemyComponent enemyComponent = engine.createComponent(EnemyComponent.class);
+        SteeringComponent steeringComponent = engine.createComponent(SteeringComponent.class);
+
+        bodyComponent.body = factory.makeCircle(
+                posX, posY, 1f,
+                BodyFactory.Material.STONE, BodyDef.BodyType.DynamicBody,
+                true
+        );
+        bodyComponent.body.setGravityScale(0f);
+        bodyComponent.body.setLinearDamping(0.3f);
+        BodyFactory.makeAllFixturesSensors(bodyComponent.body);
+        bodyComponent.body.setUserData(entity);
+        transformComponent.position.set(posX, posY, 0f);
+
+        steeringComponent.body = bodyComponent.body;
+        steeringComponent.steeringBehavior = SteeringPresets.getWander(steeringComponent);
+        steeringComponent.currentMode = SteeringComponent.SteeringState.WANDER;
+
+        enemyComponent.type = enemyType;
+
+        Array<TextureAtlas.AtlasRegion> dyingEffect = atlas.findRegions("puff");
+
+        TextureRegion m1 = atlas.findRegion("aedes-1");
+        TextureRegion m2 = atlas.findRegion("aedes-2");
+        TextureRegion m3 = atlas.findRegion("aedes-3");
+        TextureRegion m4 = atlas.findRegion("aedes-4");
+        TextureRegion m5 = atlas.findRegion("aedes-5");
+        TextureRegion m6 = atlas.findRegion("aedes-6");
+        TextureRegion m7 = atlas.findRegion("aedes-7");
+        TextureRegion m8 = atlas.findRegion("aedes-8");
+        TextureRegion m9 = atlas.findRegion("aedes-9");
+
+        TextureRegion[] flyingFrames = {
+                m1, m2, m3, m4, m5, m6,
+                m1, m2, m3, m4, m5, m6,
+                m1, m2, m3, m4, m5, m6,
+                m1, m2, m3, m4, m5, m6,
+                m1, m2, m3, m4, m5, m6,
+                m1, m2, m3, m7, m8, m9,
+        };
+
+        textureComponent.region = flyingFrames[0];
+
+        Animation<TextureRegion> dyingAnimation = new Animation<TextureRegion>(0.07f, dyingEffect);
+        Animation<TextureRegion> flyingAnimation = new Animation<>(0.04f, flyingFrames);
+        flyingAnimation.setPlayMode(Animation.PlayMode.LOOP);
+
+        animationComponent.animations.put(StateComponent.State.IDLE, flyingAnimation);
+        animationComponent.animations.put(StateComponent.State.MOVING, flyingAnimation);
+        animationComponent.animations.put(StateComponent.State.DYING, dyingAnimation);
+
+        typeComponent.type = TypeComponent.Type.ENEMY;
+        stateComponent.set(StateComponent.State.IDLE);
+
+        entity.add(bodyComponent);
+        entity.add(transformComponent);
+        entity.add(textureComponent);
+        entity.add(animationComponent);
+        entity.add(collisionComponent);
+        entity.add(typeComponent);
+        entity.add(stateComponent);
+        entity.add(enemyComponent);
+        entity.add(steeringComponent);
+
+        engine.addEntity(entity);
+
+        return entity;
+    }
+
+    public Entity createDollar(float posX, float posY) {
+        Entity entity = engine.createEntity();
+
+        Box2DBodyComponent bodyComponent = engine.createComponent(Box2DBodyComponent.class);
+        TransformComponent transformComponent = engine.createComponent(TransformComponent.class);
+        TextureComponent textureComponent = engine.createComponent(TextureComponent.class);
+        AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
+        CollisionComponent collisionComponent = engine.createComponent(CollisionComponent.class);
+        CollectibleComponent collectibleComponent = engine.createComponent(CollectibleComponent.class);
+        TypeComponent typeComponent = engine.createComponent(TypeComponent.class);
+        StateComponent stateComponent = engine.createComponent(StateComponent.class);
+        SteeringComponent steeringComponent = engine.createComponent(SteeringComponent.class);
+
+        bodyComponent.body = factory.makeCircle(
+                posX, posY, 1f,
+                BodyFactory.Material.STONE, BodyDef.BodyType.DynamicBody,
+                true
+        );
+        bodyComponent.body.setGravityScale(0f);
+        bodyComponent.body.setLinearDamping(0.3f);
+        BodyFactory.makeAllFixturesSensors(bodyComponent.body);
+        bodyComponent.body.setUserData(entity);
+        transformComponent.position.set(posX, posY, 0f);
+
+        steeringComponent.body = bodyComponent.body;
+        steeringComponent.steeringBehavior = null;
+        steeringComponent.currentMode = SteeringComponent.SteeringState.NONE;
+        steeringComponent.setIndependentFacing(true);
+
+        Array<TextureAtlas.AtlasRegion> flyingFrames = atlas.findRegions("dollar");
+
+        textureComponent.region = flyingFrames.get(0);
+
+        Animation<TextureRegion> flyingAnimation = new Animation<TextureRegion>(0.125f, flyingFrames);
+        flyingAnimation.setPlayMode(Animation.PlayMode.LOOP);
+
+        animationComponent.animations.put(StateComponent.State.IDLE, flyingAnimation);
+        animationComponent.animations.put(StateComponent.State.MOVING, flyingAnimation);
+
+        collectibleComponent.type = CollectibleComponent.Type.DOLLAR;
+
+        typeComponent.type = TypeComponent.Type.COLLECTIBLE;
+        stateComponent.set(StateComponent.State.IDLE);
+
+        entity.add(bodyComponent);
+        entity.add(transformComponent);
+        entity.add(textureComponent);
+        entity.add(animationComponent);
+        entity.add(collisionComponent);
+        entity.add(collectibleComponent);
+        entity.add(typeComponent);
+        entity.add(stateComponent);
+        entity.add(steeringComponent);
+
+        engine.addEntity(entity);
+
+        return entity;
+    }
+
+    public Entity createGun(float posX, float posY, float width, float height, int maxAmmo, float fireRate) {
+        Entity entity = engine.createEntity();
+
+        Box2DBodyComponent bodyC = engine.createComponent(Box2DBodyComponent.class);
+        TextureComponent textureC = engine.createComponent(TextureComponent.class);
+        TransformComponent transformC = engine.createComponent(TransformComponent.class);
+        TypeComponent typeC = engine.createComponent(TypeComponent.class);
+        GunComponent gunC = engine.createComponent(GunComponent.class);
+
+        bodyC.body = factory.makeRectangle(posX, posY, width, height,
+                BodyFactory.Material.STEEL, BodyDef.BodyType.KinematicBody, true);
+        BodyFactory.makeAllFixturesSensors(bodyC.body);
+        bodyC.body.setUserData(entity);
+
+        transformC.position.set(posX, posY, 1f);
+
+        textureC.region = atlas.findRegion("handgun");
+
+        typeC.type = TypeComponent.Type.HELD_ITEM;
+
+        gunC.maxAmmo = maxAmmo;
+        gunC.ammo = maxAmmo;
+        gunC.fireRate = fireRate;
+
+        entity.add(bodyC);
+        entity.add(textureC);
+        entity.add(transformC);
+        entity.add(typeC);
+        entity.add(gunC);
+
+        engine.addEntity(entity);
+
+        return entity;
     }
 
     public void createPlatform(float posX, float posY, float width, float height) {
@@ -271,6 +465,31 @@ public class LevelFactory implements Disposable {
         entity.add(bodyC);
         entity.add(textureC);
         entity.add(typeC);
+
+        engine.addEntity(entity);
+    }
+
+    public void createGoal(float posX, float posY, float width, float height) {
+        Entity entity = engine.createEntity();
+
+        Box2DBodyComponent bodyComponent = engine.createComponent(Box2DBodyComponent.class);
+        TransformComponent transformComponent = engine.createComponent(TransformComponent.class);
+        TypeComponent typeComponent = engine.createComponent(TypeComponent.class);
+        CollisionComponent collisionComponent = engine.createComponent(CollisionComponent.class);
+
+        bodyComponent.body = factory.makeRectangle(posX, posY, width, height,
+                BodyFactory.Material.STONE, BodyDef.BodyType.StaticBody, true);
+        BodyFactory.makeAllFixturesSensors(bodyComponent.body);
+        bodyComponent.body.setUserData(entity);
+
+        transformComponent.position.set(posX, posY, 0f);
+
+        typeComponent.type = TypeComponent.Type.GOAL;
+
+        entity.add(bodyComponent);
+        entity.add(transformComponent);
+        entity.add(typeComponent);
+        entity.add(collisionComponent);
 
         engine.addEntity(entity);
     }
@@ -383,12 +602,29 @@ public class LevelFactory implements Disposable {
         Ellipse ellipse = ((EllipseMapObject) object).getEllipse();
 
         switch (object.getName()) {
-            case "enemy":
+            case "coronavirus":
                 createEnemy(
+                        (ellipse.x + ellipse.width / 2f) / RenderingSystem.PPM,
+                        (ellipse.y + ellipse.height / 2f) / RenderingSystem.PPM,
+                        EnemyComponent.Type.CORONA
+                );
+                break;
+
+            case "aedes":
+                createSeeker(
+                        (ellipse.x + ellipse.width / 2f) / RenderingSystem.PPM,
+                        (ellipse.y + ellipse.height / 2f) / RenderingSystem.PPM,
+                        EnemyComponent.Type.AEDES
+                );
+                break;
+
+            case "dollar":
+                createDollar(
                         (ellipse.x + ellipse.width / 2f) / RenderingSystem.PPM,
                         (ellipse.y + ellipse.height / 2f) / RenderingSystem.PPM
                 );
                 break;
+
             default:
                 // nothing
         }
@@ -409,6 +645,15 @@ public class LevelFactory implements Disposable {
 
             case "platform":
                 createPlatform(
+                        (rectangle.x + rectangle.width / 2f) / RenderingSystem.PPM,
+                        (rectangle.y + rectangle.height / 2f) / RenderingSystem.PPM,
+                        rectangle.width / RenderingSystem.PPM,
+                        rectangle.height / RenderingSystem.PPM
+                );
+                break;
+
+            case "goal":
+                createGoal(
                         (rectangle.x + rectangle.width / 2f) / RenderingSystem.PPM,
                         (rectangle.y + rectangle.height / 2f) / RenderingSystem.PPM,
                         rectangle.width / RenderingSystem.PPM,

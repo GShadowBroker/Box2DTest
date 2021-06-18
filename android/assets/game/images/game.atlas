@@ -1,166 +1,292 @@
 
 game.png
-size: 1024, 1024
+size: 2048, 1024
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
+aedes-1
+  rotate: false
+  xy: 864, 720
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+aedes-2
+  rotate: false
+  xy: 144, 144
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+aedes-4
+  rotate: false
+  xy: 144, 0
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+aedes-5
+  rotate: false
+  xy: 720, 864
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+aedes-6
+  rotate: false
+  xy: 288, 0
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+aedes-7
+  rotate: false
+  xy: 864, 864
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+aedes-8
+  rotate: false
+  xy: 0, 144
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+aedes-9
+  rotate: false
+  xy: 720, 576
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+aedes-3
+  rotate: false
+  xy: 720, 576
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
 brazil-bg
   rotate: false
-  xy: 0, 272
+  xy: 0, 288
   size: 720, 720
   orig: 720, 720
   offset: 0, 0
   index: -1
+corona-1
+  rotate: false
+  xy: 1008, 864
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+corona-2
+  rotate: false
+  xy: 720, 720
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+corona-3
+  rotate: false
+  xy: 720, 432
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+corona-4
+  rotate: false
+  xy: 288, 144
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+corona-5
+  rotate: false
+  xy: 0, 0
+  size: 144, 144
+  orig: 144, 144
+  offset: 0, 0
+  index: -1
+dollar
+  rotate: false
+  xy: 864, 464
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 0
+dollar
+  rotate: false
+  xy: 1792, 880
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 2
+dollar
+  rotate: false
+  xy: 1120, 608
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: 1
 enemy-1
   rotate: false
-  xy: 848, 736
+  xy: 1280, 880
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-2
   rotate: false
-  xy: 848, 224
+  xy: 1120, 480
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-3
   rotate: false
-  xy: 848, 480
+  xy: 1920, 880
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 enemy-4
   rotate: false
-  xy: 720, 736
+  xy: 1152, 880
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
+handgun
+  rotate: false
+  xy: 640, 224
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 platform
   rotate: false
-  xy: 0, 192
+  xy: 432, 208
   size: 208, 80
   orig: 208, 80
   offset: 0, 0
   index: -1
 player-1
   rotate: false
-  xy: 208, 144
+  xy: 864, 336
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-2
   rotate: false
-  xy: 848, 864
+  xy: 432, 80
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-3
   rotate: false
-  xy: 592, 144
+  xy: 992, 336
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 player-4
   rotate: false
-  xy: 848, 608
+  xy: 1536, 880
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 projectile
   rotate: false
-  xy: 0, 0
+  xy: 432, 16
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 1
 projectile
   rotate: false
-  xy: 128, 128
+  xy: 496, 16
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 0
 projectile
   rotate: false
-  xy: 848, 160
+  xy: 560, 16
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 2
 puff
   rotate: false
-  xy: 720, 864
+  xy: 864, 592
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 3
 puff
   rotate: false
-  xy: 720, 608
+  xy: 720, 304
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 0
 puff
   rotate: false
-  xy: 720, 480
+  xy: 1408, 880
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 5
 puff
   rotate: false
-  xy: 720, 352
+  xy: 1664, 880
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 2
 puff
   rotate: false
-  xy: 848, 352
+  xy: 560, 80
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 7
 puff
   rotate: false
-  xy: 336, 144
+  xy: 992, 592
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 4
 puff
   rotate: false
-  xy: 720, 224
+  xy: 1136, 736
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 1
 puff
   rotate: false
-  xy: 720, 96
+  xy: 1120, 352
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: 6
 spring-1
   rotate: false
-  xy: 0, 64
+  xy: 1008, 736
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 spring-2
   rotate: false
-  xy: 464, 144
+  xy: 992, 464
   size: 128, 128
   orig: 128, 128
   offset: 0, 0

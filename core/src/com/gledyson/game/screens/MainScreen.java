@@ -6,21 +6,24 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.gledyson.game.Box2DGame;
-import com.gledyson.game.KeyboardController;
 import com.gledyson.game.LevelFactory;
 import com.gledyson.game.audio.SoundEffect;
 import com.gledyson.game.components.PlayerComponent;
+import com.gledyson.game.controller.KeyboardController;
 import com.gledyson.game.loaders.Box2DAssetManager;
 import com.gledyson.game.physics.BodyFactory;
 import com.gledyson.game.systems.AnimationSystem;
 import com.gledyson.game.systems.CameraSystem;
+import com.gledyson.game.systems.CollectibleSystem;
 import com.gledyson.game.systems.CollisionSystem;
 import com.gledyson.game.systems.EnemySystem;
+import com.gledyson.game.systems.GunSystem;
 import com.gledyson.game.systems.Mappers;
 import com.gledyson.game.systems.PhysicsDebugSystem;
 import com.gledyson.game.systems.PhysicsSystem;
@@ -28,6 +31,7 @@ import com.gledyson.game.systems.PlayerControlSystem;
 import com.gledyson.game.systems.ProjectileSystem;
 import com.gledyson.game.systems.RenderingSystem;
 import com.gledyson.game.systems.SpringSystem;
+import com.gledyson.game.systems.SteeringSystem;
 import com.gledyson.game.utils.FrameRate;
 
 public class MainScreen implements Screen {
@@ -41,12 +45,17 @@ public class MainScreen implements Screen {
     private final FrameRate frameRate;
 
     private final TextureAtlas atlas;
-    private final TiledMap map;
+
+    private final TiledMap[] mapList;
+    private final TiledMap activeMap;
     private final OrthogonalTiledMapRenderer mapRenderer;
 
     private final SoundEffect sound;
 
     private final PlayerComponent playerC;
+
+    // TEST
+    private final Texture background = new Texture(Gdx.files.internal("game/images/background.jpg"));
 
     public MainScreen(Box2DGame game) {
         this(game, new PooledEngine());
@@ -61,13 +70,19 @@ public class MainScreen implements Screen {
         atlas = game.assetManager.manager.get(Box2DAssetManager.GAME_ATLAS);
 
         // Map
-        map = game.assetManager.manager.get(Box2DAssetManager.LEVEL_1_MAP);
-        mapRenderer = new OrthogonalTiledMapRenderer(map, RenderingSystem.PIXELS_TO_METERS);
+        TiledMap map_1 = game.assetManager.manager.get(Box2DAssetManager.LEVEL_1_MAP);
+        TiledMap map_2 = game.assetManager.manager.get(Box2DAssetManager.LEVEL_2_MAP);
+
+        mapList = new TiledMap[]{map_1, map_2};
+        activeMap = mapList[game.state.getLevel()];
+
+        mapRenderer = new OrthogonalTiledMapRenderer(
+                activeMap, // level as mapList index
+                RenderingSystem.PIXELS_TO_METERS
+        );
 
         // create engine
         this.engine = engine;
-
-        Gdx.app.log(TAG, "Systems: " + engine.getSystems().size());
 
         // create LevelFactory
         lvlFactory = new LevelFactory(engine, atlas);
@@ -78,22 +93,25 @@ public class MainScreen implements Screen {
         camera = renderingSystem.getCamera();
         game.batch.setProjectionMatrix(camera.combined);
 
-        engine.addSystem(new AnimationSystem());
-//        engine.addSystem(new LevelGenerationSystem(lvlFactory));
-        engine.addSystem(new PlayerControlSystem(sound, controller, lvlFactory));
-        engine.addSystem(new CollisionSystem(game, sound));
-//        engine.addSystem(new LiquidFloorSystem(player));
-        engine.addSystem(new EnemySystem());
-        engine.addSystem(new ProjectileSystem());
-        engine.addSystem(new SpringSystem());
-        engine.addSystem(new CameraSystem(map));
-        engine.addSystem(new PhysicsSystem(lvlFactory.world, engine, map));
-        engine.addSystem(new PhysicsDebugSystem(lvlFactory.world, camera, game));
-        engine.addSystem(renderingSystem);
-
         // create Entities
         Entity playerEntity = lvlFactory.createPlayer(atlas.findRegion("player-1"), camera);
-        lvlFactory.createMapCollisions(map.getLayers().get("collision").getObjects());
+        lvlFactory.createMapCollisions(activeMap.getLayers().get("collision").getObjects());
+
+        engine.addSystem(new AnimationSystem());
+        engine.addSystem(new SteeringSystem());
+        engine.addSystem(new CollisionSystem(game, this, sound));
+        engine.addSystem(new EnemySystem(playerEntity));
+        engine.addSystem(new ProjectileSystem());
+        engine.addSystem(new SpringSystem());
+        engine.addSystem(new CollectibleSystem(playerEntity));
+
+        engine.addSystem(new PhysicsSystem(lvlFactory.world, engine, activeMap));
+        engine.addSystem(new PhysicsDebugSystem(lvlFactory.world, camera, game));
+        engine.addSystem(new GunSystem(playerEntity));
+        engine.addSystem(new PlayerControlSystem(sound, controller, lvlFactory));
+        engine.addSystem(new CameraSystem(activeMap));
+        engine.addSystem(renderingSystem);
+
         // save player component
         playerC = Mappers.player.get(playerEntity);
     }
@@ -109,7 +127,17 @@ public class MainScreen implements Screen {
 
         if (playerC.isDead) {
             handlePlayerDead();
+            return;
         }
+
+        game.batch.begin();
+        game.batch.draw(background,
+                camera.position.x - (RenderingSystem.FRUSTUM_WIDTH / 2f),
+                camera.position.y - (RenderingSystem.FRUSTUM_HEIGHT / 2f),
+                camera.viewportWidth,
+                camera.viewportHeight
+        );
+        game.batch.end();
 
         engine.update(delta);
 
@@ -132,6 +160,21 @@ public class MainScreen implements Screen {
         }
         game.state.die();
         clear();
+        game.setScreen(new MainScreen(game, engine));
+    }
+
+    public void handlePassLevel() {
+        Gdx.app.log(TAG, "GOAL HIT PLAYER. CONGRATS! YOU HAVE PASSED THE LEVEL!");
+
+        engine.removeAllEntities();
+        engine.clearPools();
+        for (EntitySystem system : engine.getSystems()) {
+            engine.removeSystem(system);
+        }
+        BodyFactory.clearInstance();
+        dispose();
+
+        game.state.setLevel(1);
         game.setScreen(new MainScreen(game, engine));
     }
 
@@ -167,7 +210,9 @@ public class MainScreen implements Screen {
     public void dispose() {
         Gdx.app.log(TAG, "Disposing of MainScreen...");
         lvlFactory.dispose();
-        map.dispose();
+        for (TiledMap map : mapList) {
+            map.dispose();
+        }
         mapRenderer.dispose();
     }
 }

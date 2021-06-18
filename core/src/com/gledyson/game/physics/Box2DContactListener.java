@@ -13,8 +13,12 @@ public class Box2DContactListener implements ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
+        if (contact == null) return;
+
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
+
+        if (fa == null || fb == null) return;
 
         if (fa.getBody().getUserData() instanceof Entity) {
             Entity entity = (Entity) fa.getBody().getUserData();

@@ -56,7 +56,7 @@ public class BodyFactory {
                 break;
             case STONE:
                 fixture.density = 1f;
-                fixture.friction = 0.9f;
+                fixture.friction = 0.5f;
                 fixture.restitution = 0f;
                 break;
             default:
@@ -168,6 +168,12 @@ public class BodyFactory {
     public static void makeAllFixturesSensors(Body body) {
         for (Fixture fixture : body.getFixtureList()) {
             fixture.setSensor(true);
+        }
+    }
+
+    public static void removeAllSensors(Body body) {
+        for (Fixture fixture : body.getFixtureList()) {
+            fixture.setSensor(false);
         }
     }
 }

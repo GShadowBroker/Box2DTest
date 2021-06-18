@@ -13,7 +13,8 @@ import com.gledyson.game.screens.PreferencesScreen;
 public class Box2DGame extends Game {
     public SpriteBatch batch;
     public Box2DAssetManager assetManager;
-    public boolean debugMode = false;
+    public boolean debugMode = true;
+    public boolean debugRendererActive = false;
     public AppPreferences preferences;
     public GameState state;
 

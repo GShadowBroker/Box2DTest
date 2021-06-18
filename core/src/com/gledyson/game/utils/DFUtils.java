@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 public class DFUtils {
     private static String[] fnames;
@@ -121,5 +122,16 @@ public class DFUtils {
 
     private static void disposePmap() {
         pmap.dispose();
+    }
+
+    public static float vectorToAngle(Vector2 vector) {
+        return (float) Math.atan2(-vector.x, vector.y);
+//        return vector.angleRad();
+    }
+
+    public static Vector2 angleToVector(Vector2 outVector, float angle) {
+        outVector.x = -(float) Math.sin(angle);
+        outVector.y = (float) Math.cos(angle);
+        return outVector;
     }
 }

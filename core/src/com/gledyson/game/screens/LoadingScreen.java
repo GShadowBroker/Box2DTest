@@ -13,8 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.gledyson.game.Box2DGame;
-import com.gledyson.game.LoadingBarPart;
 import com.gledyson.game.loaders.Box2DAssetManager;
+import com.gledyson.game.view.LoadingBarPart;
 
 public class LoadingScreen implements Screen {
     private static final String TAG = LoadingScreen.class.getSimpleName();

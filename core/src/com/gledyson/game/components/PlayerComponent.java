@@ -1,6 +1,7 @@
 package com.gledyson.game.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.Pool;
 
@@ -9,6 +10,8 @@ public class PlayerComponent implements Component, Pool.Poolable {
     public boolean isDead = false;
     public boolean onPlatform = false;
     public boolean onSpring = false;
+
+    public Entity gun;
 
     public int maxJumps = 1;
     public final float TIME_BETWEEN_JUMPS = 0.5f;

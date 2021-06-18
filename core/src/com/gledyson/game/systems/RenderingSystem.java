@@ -68,6 +68,9 @@ public class RenderingSystem extends SortedIteratingSystem {
         // render map
         mapRenderer.render();
 
+//        int[] backgroundLayers = {0};
+//        int[] foregroundLayers = {1, 2};
+
         batch.begin();
         drawEntities();
         batch.end();

@@ -7,3 +7,12 @@ https://freesound.org/people/Brokenphono/sounds/344142/
 dying.wav
 https://freesound.org/people/starkvind/sounds/559975/
 
+out_of_ammo.wav
+https://freesound.org/people/flubek/sounds/547711/
+
+handgun_reload
+https://freesound.org/people/Kazz200722/sounds/528703/
+
+loot
+https://freesound.org/people/SieuAmThanh/sounds/552012/
+
